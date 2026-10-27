@@ -2,133 +2,519 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luna & Sol</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Loba & Lobo 🐺✨ Nuestro Ciclo</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente redondeada y estética -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #ff6b81;
-            --bg: #fff0f3;
-            --text: #2f3542;
-        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            text-align: center;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe4e8 50%, #f3e8ff 100%);
+            min-height: 100vh;
+            color: #374151;
+            overflow-x: hidden;
         }
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(255, 107, 129, 0.1);
+        .glass {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
         }
-        h1 {
-            color: var(--primary);
-            font-size: 28px;
+        .fade-in {
+            animation: fadeIn 0.35s ease-out forwards;
         }
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 15px 20px;
-            border-radius: 10px;
-            font-size: 16px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse-soft {
+            animation: pulseSoft 2.5s infinite;
+        }
+        @keyframes pulseSoft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .chip-active {
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%) !important;
+            color: white !important;
+            border-color: transparent !important;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+        }
+        .energy-active {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%) !important;
+            color: white !important;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        /* Calendario */
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+        .cal-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
             cursor: pointer;
-            margin: 10px;
-            width: 80%;
-            font-weight: bold;
+            transition: all 0.2s;
+            position: relative;
         }
-        button:hover {
-            background-color: #ff4757;
+        .cal-day:hover { background-color: #fce7f3; }
+        .day-period {
+            background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(225, 29, 72, 0.35);
         }
-        input {
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #ffcccc;
-            border-radius: 8px;
-            text-align: center;
-            width: 70%;
-            margin-bottom: 10px;
+        .day-predicted {
+            background-color: #ffe4e6;
+            color: #e11d48;
+            border: 2px dashed #fda4af;
         }
-        .hidden { display: none; }
-        .symptom-btn {
-            background-color: #f1f2f6;
-            color: var(--text);
-            width: 45%;
-            margin: 5px;
+        .day-fertile {
+            background-color: #f3e8ff;
+            color: #7e22ce;
+            border: 1px solid #d8b4fe;
         }
-        .symptom-btn.active {
-            background-color: var(--primary);
-            color: white;
+        .day-ovulation {
+            background: linear-gradient(135deg, #a855f7, #ec4899) !important;
+            color: white !important;
         }
-        .tip-card {
-            background: #ffeaa7;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-style: italic;
+        .day-selected {
+            outline: 3px solid #ec4899;
+            outline-offset: 1px;
         }
     </style>
 </head>
-<body>
+<body class="pb-12">
 
-    <div class="container">
-        <h1>Luna & Sol 🌙☀️</h1>
-        <p id="status-msg">Conectando...</p>
+    <!-- BARRA SUPERIOR -->
+    <header class="max-w-md mx-auto pt-5 px-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-3xl">🐺</span>
+            <div>
+                <h1 class="font-bold text-xl bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent leading-tight">
+                    Loba & Lobo
+                </h1>
+                <p id="sync-badge" class="text-xs text-gray-500 font-medium">Conectando con la manada...</p>
+            </div>
+        </div>
+        <button id="btn-reset-session" onclick="cambiarRol()" class="hidden text-xs bg-white/80 hover:bg-white text-gray-600 px-3 py-1.5 rounded-full shadow-sm border border-pink-100 font-semibold transition">
+            Cambiar Rol / Código
+        </button>
+    </header>
 
-        <!-- PANTALLA DE INICIO -->
-        <div id="screen-role" class="hidden">
-            <p>¿Quién eres?</p>
-            <button onclick="elegirRol('novia')">Soy la Novia 🌸</button>
-            <button onclick="elegirRol('novio')">Soy el Novio 🧸</button>
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="max-w-md mx-auto px-4 mt-4">
+
+        <!-- ALERTA DE ERROR DE FIREBASE (OCULTA SI TODO ESTÁ BIEN) -->
+        <div id="error-box" class="hidden mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            <p class="font-bold mb-1">⚠️ Atención con Firebase:</p>
+            <p id="error-text"></p>
         </div>
 
-        <!-- PANTALLA CÓDIGO -->
-        <div id="screen-code" class="hidden">
-            <p>Tu Código de Pareja es:</p>
-            <h2 id="couple-code-display" style="letter-spacing: 3px; color: var(--primary);">---</h2>
-            <p style="font-size: 12px;">Comparte este código con tu novio.</p>
-            <button onclick="entrarDashboardNovia()">Ir a mi calendario</button>
+        <!-- 1. PANTALLA DE CARGA -->
+        <div id="screen-loading" class="glass rounded-3xl p-8 text-center shadow-lg mt-10">
+            <div class="text-5xl mb-4 animate-bounce">🐺💖</div>
+            <h2 class="text-lg font-bold text-pink-600">Conectando Corazones...</h2>
+            <p class="text-xs text-gray-500 mt-1">Sincronizando con el servidor de Loba & Lobo</p>
         </div>
 
-        <!-- PANTALLA INGRESAR CÓDIGO NOVIO -->
-        <div id="screen-join" class="hidden">
-            <p>Ingresa el Código de Pareja:</p>
-            <input type="text" id="input-code" placeholder="Ej. A1B2C" style="text-transform: uppercase;">
-            <button onclick="unirseNovio()">Sincronizar</button>
+        <!-- 2. PANTALLA ELEGIR ROL -->
+        <div id="screen-role" class="hidden glass rounded-3xl p-7 text-center shadow-xl mt-6 fade-in">
+            <div class="text-5xl mb-3">🌕🐺</div>
+            <h2 class="text-2xl font-bold text-gray-800">¡Bienvenidos a su espacio!</h2>
+            <p class="text-sm text-gray-500 mt-1 mb-6">Elige quién eres para sincronizar sus pantallas en tiempo real:</p>
+
+            <div class="space-y-4">
+                <button onclick="seleccionarRol('loba')" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-lg shadow-lg shadow-pink-200 hover:opacity-95 transition flex items-center justify-between">
+                    <span class="flex items-center gap-3"><span class="text-2xl">🌸</span> Soy la Loba</span>
+                    <span class="text-xs bg-white/20 px-3 py-1 rounded-full">Crear o abrir mi ciclo</span>
+                </button>
+
+                <button onclick="seleccionarRol('lobo')" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg shadow-lg shadow-indigo-200 hover:opacity-95 transition flex items-center justify-between">
+                    <span class="flex items-center gap-3"><span class="text-2xl">🌙</span> Soy el Lobo</span>
+                    <span class="text-xs bg-white/20 px-3 py-1 rounded-full">Cuidar a mi Loba</span>
+                </button>
+            </div>
         </div>
 
-        <!-- DASHBOARD NOVIA -->
-        <div id="dashboard-novia" class="hidden">
-            <h2>Mi Día 🌸</h2>
-            <p>¿Cómo te sientes hoy?</p>
-            <button class="symptom-btn" id="btn-colicos" onclick="toggleSintoma('Cólicos')">Cólicos 😣</button>
-            <button class="symptom-btn" id="btn-sensible" onclick="toggleSintoma('Sensible')">Sensible 🥺</button>
-            <button class="symptom-btn" id="btn-feliz" onclick="toggleSintoma('Feliz')">Feliz ✨</button>
-            <button class="symptom-btn" id="btn-cansada" onclick="toggleSintoma('Cansada')">Cansada 🥱</button>
-            <br><br>
-            <button onclick="togglePeriodo()" id="btn-periodo" style="background-color: #7bed9f; color: #2ed573;">🩸 Marcar Inicio de Periodo</button>
+        <!-- 3. PANTALLA VINCULAR CÓDIGO (LOBA O LOBO) -->
+        <div id="screen-link" class="hidden glass rounded-3xl p-7 text-center shadow-xl mt-6 fade-in">
+            <div id="link-loba-view" class="hidden">
+                <div class="text-4xl mb-2">🐺🌸</div>
+                <h2 class="text-xl font-bold text-gray-800">Tu Código de Manada</h2>
+                <p class="text-xs text-gray-500 mt-1">Comparte este código con tu Lobo para que sus teléfonos queden conectados:</p>
+                
+                <div class="my-5 p-4 bg-pink-50 border-2 border-dashed border-pink-300 rounded-2xl">
+                    <p id="generated-code" class="text-3xl font-extrabold tracking-widest text-pink-600 select-all">-----</p>
+                </div>
+
+                <button onclick="copiarCodigo()" class="mb-3 w-full py-2.5 rounded-xl bg-pink-100 text-pink-700 font-bold text-sm hover:bg-pink-200 transition">
+                    📋 Copiar Código
+                </button>
+                <button onclick="confirmarEntradaLoba()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold shadow-md">
+                    Entrar a mi Espacio ✨
+                </button>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <p class="text-xs text-gray-500 mb-2">¿Ya tenías un código antes en otro celular?</p>
+                    <div class="flex gap-2">
+                        <input id="recover-code-loba" type="text" maxlength="6" placeholder="Tu código anterior" class="flex-1 px-3 py-2 text-sm border rounded-xl uppercase text-center font-bold">
+                        <button onclick="recuperarCodigoLoba()" class="px-4 py-2 bg-gray-800 text-white text-xs font-bold rounded-xl">Recuperar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="link-lobo-view" class="hidden">
+                <div class="text-4xl mb-2">🐺🌙</div>
+                <h2 class="text-xl font-bold text-gray-800">Conectar con mi Loba</h2>
+                <p class="text-xs text-gray-500 mt-1 mb-4">Escribe el código de 5 letras que aparece en el celular de tu Loba:</p>
+
+                <input id="input-lobo-code" type="text" maxlength="6" placeholder="EJ: LOBA1" 
+                    class="w-full py-3.5 px-4 text-2xl font-extrabold tracking-widest text-center uppercase bg-white border-2 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-600 mb-4">
+                
+                <button onclick="conectarLobo()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold shadow-md">
+                    Sincronizar Ahora 🐾
+                </button>
+            </div>
         </div>
 
-        <!-- DASHBOARD NOVIO -->
-        <div id="dashboard-novio" class="hidden">
-            <h2>Resumen de tu Novia 🧸</h2>
-            <div id="novio-status">Esperando datos...</div>
-            <div id="novio-tips" class="tip-card hidden"></div>
-        </div>
-    </div>
+        <!-- ========================================== -->
+        <!-- 4. MODAL DE CHECK-IN DIARIO (PARA LA LOBA) -->
+        <!-- ========================================== -->
+        <div id="modal-checkin" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl max-h-[92vh] overflow-y-auto fade-in">
+                
+                <!-- PASO 1: PREGUNTAR ÁNIMO Y ENERGÍA -->
+                <div id="checkin-form-step">
+                    <div class="text-center mb-4">
+                        <span class="text-4xl">🐺💖</span>
+                        <h3 class="text-xl font-bold text-gray-800 mt-1">¡Hola, mi Loba hermosa!</h3>
+                        <p class="text-xs text-gray-500">Antes de empezar, cuéntale a tu Lobo cómo amaneciste hoy:</p>
+                    </div>
 
-    <!-- SCRIPTS DE FIREBASE -->
+                    <!-- Estado de Ánimo -->
+                    <p class="text-xs font-bold text-pink-600 uppercase tracking-wider mb-2">1. ¿Cuál es tu estado de ánimo hoy?</p>
+                    <div class="grid grid-cols-2 gap-2 mb-5" id="checkin-mood-grid">
+                        <button onclick="selectCheckinMood('Feliz ✨')" class="checkin-mood-btn py-2.5 px-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-pink-50 transition">Feliz ✨</button>
+                        <button onclick="selectCheckinMood('Cariñosa 🥰')" class="checkin-mood-btn py-2.5 px-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-pink-50 transition">Cariñosa 🥰</button>
+                        <button onclick="selectCheckinMood('Sensible 🥺')" class="checkin-mood-btn py-2.5 px-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-pink-50 transition">Sensible 🥺</button>
+                        <button onclick="selectCheckinMood('Tranquila 🌸')" class="checkin-mood-btn py-2.5 px-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-pink-50 transition">Tranquila 🌸</button>
+                        <button onclick="selectCheckinMood('Irritada 💢')" class="checkin-mood-btn py-2.5 px-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-pink-50 transition">Irritada 💢</button>
+                        <button onclick="selectCheckinMood('Ansiosa 🌀')" class="checkin-mood-btn py-2.5 px-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-pink-50 transition">Ansiosa 🌀</button>
+                        <button onclick="selectCheckinMood('Triste 🌧️')" class="checkin-mood-btn py-2.5 px-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-pink-50 transition">Triste 🌧️</button>
+                        <button onclick="selectCheckinMood('Con antojos 🍫')" class="checkin-mood-btn py-2.5 px-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-pink-50 transition">Con antojos 🍫</button>
+                    </div>
+
+                    <!-- Nivel de Energía -->
+                    <p class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-2">2. ¿Cómo está tu batería de energía?</p>
+                    <div class="grid grid-cols-5 gap-1.5 mb-5">
+                        <button onclick="selectCheckinEnergy(1)" class="checkin-energy-btn py-2.5 px-1 rounded-xl border border-gray-200 text-center transition flex flex-col items-center">
+                            <span class="text-lg">🛌</span>
+                            <span class="text-[10px] font-bold mt-1">20%</span>
+                        </button>
+                        <button onclick="selectCheckinEnergy(2)" class="checkin-energy-btn py-2.5 px-1 rounded-xl border border-gray-200 text-center transition flex flex-col items-center">
+                            <span class="text-lg">🪫</span>
+                            <span class="text-[10px] font-bold mt-1">40%</span>
+                        </button>
+                        <button onclick="selectCheckinEnergy(3)" class="checkin-energy-btn py-2.5 px-1 rounded-xl border border-gray-200 text-center transition flex flex-col items-center">
+                            <span class="text-lg">🔋</span>
+                            <span class="text-[10px] font-bold mt-1">60%</span>
+                        </button>
+                        <button onclick="selectCheckinEnergy(4)" class="checkin-energy-btn py-2.5 px-1 rounded-xl border border-gray-200 text-center transition flex flex-col items-center">
+                            <span class="text-lg">✨</span>
+                            <span class="text-[10px] font-bold mt-1">80%</span>
+                        </button>
+                        <button onclick="selectCheckinEnergy(5)" class="checkin-energy-btn py-2.5 px-1 rounded-xl border border-gray-200 text-center transition flex flex-col items-center">
+                            <span class="text-lg">⚡</span>
+                            <span class="text-[10px] font-bold mt-1">100%</span>
+                        </button>
+                    </div>
+
+                    <!-- Nota rápida opcional -->
+                    <input id="checkin-note" type="text" placeholder="¿Quieres dejarle una notita a tu Lobo? (Opcional)" 
+                        class="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl mb-4 focus:outline-none focus:border-pink-400">
+
+                    <button onclick="guardarCheckinDiario()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold shadow-lg hover:opacity-95 transition">
+                        Enviar a mi Lobo y ver mi mensaje 💌
+                    </button>
+                </div>
+
+                <!-- PASO 2: MENSAJITO BONITO DE RECOMPENSA -->
+                <div id="checkin-message-step" class="hidden text-center py-4 fade-in">
+                    <div class="text-5xl mb-3 pulse-soft">💌🐺</div>
+                    <h3 class="text-lg font-bold text-pink-600 mb-2">Mensaje de tu Lobo para ti:</h3>
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-200 shadow-inner my-4">
+                        <p id="sweet-message-text" class="text-gray-800 font-semibold italic text-base leading-relaxed"></p>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-5">✨ Tu estado de ánimo y energía ya se sincronizaron con tu Lobo.</p>
+                    <button onclick="cerrarModalCheckin()" class="w-full py-3 rounded-xl bg-gray-900 text-white font-bold text-sm">
+                        Ir a mi Calendario 🌸
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 5. DASHBOARD DE LA LOBA                    -->
+        <!-- ========================================== -->
+        <div id="dashboard-loba" class="hidden space-y-4 fade-in">
+            
+            <!-- BANNER DEL MENSAJITO BONITO SIEMPRE VISIBLE -->
+            <div class="glass rounded-3xl p-4 shadow-md border-l-4 border-pink-500 flex items-start gap-3">
+                <div class="text-2xl mt-0.5">💌</div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-pink-600">Mensajito de tu Lobo</span>
+                        <button onclick="abrirModalCheckin()" class="text-[11px] text-purple-600 font-bold underline">Actualizar mi ánimo</button>
+                    </div>
+                    <p id="loba-banner-msg" class="text-sm font-semibold text-gray-800 mt-0.5 italic">
+                        "Eres la Loba más hermosa del universo. Recuerda que hoy y siempre estoy aquí para cuidarte y amarte. ❤️"
+                    </p>
+                </div>
+            </div>
+
+            <!-- RESUMEN DEL CICLO Y ALGORITMO -->
+            <div class="glass rounded-3xl p-5 shadow-lg text-center relative overflow-hidden">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="loba-phase-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-pink-100 text-pink-700">
+                        🌸 Calculando fase...
+                    </span>
+                    <span class="text-xs text-gray-400 font-semibold">Código: <b id="loba-code-pill" class="text-pink-600">---</b></span>
+                </div>
+
+                <div class="my-3">
+                    <p class="text-xs uppercase tracking-widest text-gray-400 font-bold">Estado de tu Ciclo</p>
+                    <h2 id="loba-cycle-title" class="text-3xl font-extrabold text-gray-800 mt-1">Día --</h2>
+                    <p id="loba-cycle-subtitle" class="text-sm text-pink-600 font-semibold mt-1">Registra el primer día de tu periodo</p>
+                </div>
+
+                <!-- Estadísticas del Algoritmo Predictivo -->
+                <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-pink-100 text-xs">
+                    <div class="bg-white/70 p-2 rounded-xl">
+                        <p class="text-gray-400 text-[10px]">Promedio Ciclo</p>
+                        <p id="stat-avg-cycle" class="font-bold text-gray-800 text-sm">28 días</p>
+                    </div>
+                    <div class="bg-white/70 p-2 rounded-xl">
+                        <p class="text-gray-400 text-[10px]">Próx. Periodo</p>
+                        <p id="stat-next-period" class="font-bold text-rose-600 text-sm">--</p>
+                    </div>
+                    <div class="bg-white/70 p-2 rounded-xl">
+                        <p class="text-gray-400 text-[10px]">Ventana Fértil</p>
+                        <p id="stat-fertile" class="font-bold text-purple-600 text-sm">--</p>
+                    </div>
+                </div>
+
+                <!-- Botón Rápido de Inicio de Periodo Hoy -->
+                <button id="btn-period-today" onclick="registrarInicioPeriodoHoy()" 
+                    class="mt-4 w-full py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold text-sm shadow-md shadow-rose-200 hover:opacity-95 transition">
+                    🩸 Hoy inició mi periodo
+                </button>
+            </div>
+
+            <!-- ESTADO ACTUAL DE ÁNIMO Y ENERGÍA -->
+            <div class="glass rounded-3xl p-4 shadow-md flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">Tu reporte de hoy para el Lobo:</p>
+                    <p class="text-sm font-bold text-gray-800 mt-0.5">
+                        Ánimo: <span id="loba-current-mood" class="text-pink-600">--</span> · 
+                        Energía: <span id="loba-current-energy" class="text-purple-600">--</span>
+                    </p>
+                </div>
+                <button onclick="abrirModalCheckin()" class="px-3.5 py-2 rounded-xl bg-pink-100 text-pink-700 font-bold text-xs hover:bg-pink-200 transition">
+                    Cambiar ✏️
+                </button>
+            </div>
+
+            <!-- CALENDARIO INTERACTIVO -->
+            <div class="glass rounded-3xl p-5 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="cambiarMes(-1)" class="p-2 rounded-xl bg-white shadow-sm text-gray-600 hover:bg-pink-50 font-bold">◀</button>
+                    <h3 id="cal-month-title" class="font-bold text-gray-800 text-base capitalize">Mes Año</h3>
+                    <button onclick="cambiarMes(1)" class="p-2 rounded-xl bg-white shadow-sm text-gray-600 hover:bg-pink-50 font-bold">▶</button>
+                </div>
+
+                <!-- Días de la semana -->
+                <div class="cal-grid text-center text-[11px] font-bold text-gray-400 mb-2">
+                    <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                </div>
+
+                <!-- Cuadrícula del mes -->
+                <div id="calendar-days" class="cal-grid"></div>
+
+                <!-- Leyenda -->
+                <div class="flex flex-wrap justify-center gap-3 mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Periodo</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-100 border border-dashed border-rose-400 inline-block"></span> Predicción</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-200 inline-block"></span> Fértil</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 inline-block"></span> Ovulación</span>
+                </div>
+            </div>
+
+            <!-- SÍNTOMAS Y ANTOJOS DEL DÍA SELECCIONADO -->
+            <div class="glass rounded-3xl p-5 shadow-lg">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-base">Síntomas y Antojos</h3>
+                        <p id="selected-date-label" class="text-xs text-pink-600 font-semibold">Hoy</p>
+                    </div>
+                    <button id="btn-toggle-day-period" onclick="togglePeriodoEnFechaSeleccionada()" 
+                        class="text-xs px-3 py-1.5 rounded-xl border border-rose-300 text-rose-600 font-bold hover:bg-rose-50 transition">
+                        🩸 Marcar sangrado este día
+                    </button>
+                </div>
+
+                <p class="text-xs font-bold text-gray-400 uppercase mb-2">Síntomas Físicos:</p>
+                <div class="flex flex-wrap gap-2 mb-4" id="symptoms-container">
+                    <button onclick="toggleItemDia('sintomas', 'Cólicos 😣')" class="sym-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Cólicos 😣</button>
+                    <button onclick="toggleItemDia('sintomas', 'Dolor de cabeza 🤕')" class="sym-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Dolor de cabeza 🤕</button>
+                    <button onclick="toggleItemDia('sintomas', 'Hinchazón 🎈')" class="sym-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Hinchazón 🎈</button>
+                    <button onclick="toggleItemDia('sintomas', 'Dolor de espalda ⚡')" class="sym-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Dolor de espalda ⚡</button>
+                    <button onclick="toggleItemDia('sintomas', 'Pechos sensibles 🌸')" class="sym-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Pechos sensibles 🌸</button>
+                    <button onclick="toggleItemDia('sintomas', 'Mucha hambre 🍔')" class="sym-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Mucha hambre 🍔</button>
+                </div>
+
+                <p class="text-xs font-bold text-gray-400 uppercase mb-2">Antojos (le avisaremos al Lobo 👀):</p>
+                <div class="flex flex-wrap gap-2" id="cravings-container">
+                    <button onclick="toggleItemDia('antojos', 'Chocolate 🍫')" class="crav-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Chocolate 🍫</button>
+                    <button onclick="toggleItemDia('antojos', 'Postre dulce 🍰')" class="crav-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Postre dulce 🍰</button>
+                    <button onclick="toggleItemDia('antojos', 'Papitas saladas 🍟')" class="crav-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Papitas saladas 🍟</button>
+                    <button onclick="toggleItemDia('antojos', 'Helado 🍦')" class="crav-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Helado 🍦</button>
+                    <button onclick="toggleItemDia('antojos', 'Tacos / Comida rica 🌮')" class="crav-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Tacos / Comida rica 🌮</button>
+                    <button onclick="toggleItemDia('antojos', 'Mimos y abrazos 🫂')" class="crav-chip px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-semibold">Mimos y abrazos 🫂</button>
+                </div>
+            </div>
+
+            <!-- HISTORIAL DE CICLOS (PARA ENTRENAR AL ALGORITMO) -->
+            <div class="glass rounded-3xl p-5 shadow-lg">
+                <h3 class="font-bold text-gray-800 text-sm mb-1">🧠 Entrenar Algoritmo de Predicción</h3>
+                <p class="text-xs text-gray-500 mb-3">Agrega las fechas en que iniciaron tus periodos anteriores para que el cálculo promedio sea aún más exacto:</p>
+                <div class="flex gap-2 mb-3">
+                    <input type="date" id="input-past-cycle" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold">
+                    <button onclick="agregarFechaHistorial()" class="px-4 py-2 bg-pink-600 text-white rounded-xl text-xs font-bold shadow-sm">+ Agregar Inicio</button>
+                </div>
+                <div id="cycle-history-list" class="flex flex-wrap gap-1.5"></div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 6. DASHBOARD DEL LOBO                      -->
+        <!-- ========================================== -->
+        <div id="dashboard-lobo" class="hidden space-y-4 fade-in">
+            
+            <!-- TARJETA PRINCIPAL: ÁNIMO Y ENERGÍA DE LA LOBA HOY -->
+            <div class="glass rounded-3xl p-5 shadow-xl border-t-4 border-purple-600">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-purple-700 bg-purple-100 px-3 py-1 rounded-full">
+                        🐺 Radar de tu Loba en Vivo
+                    </span>
+                    <span id="lobo-last-update" class="text-[11px] text-gray-400 font-medium">Sincronizado</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 my-3">
+                    <div class="bg-pink-50/90 p-3.5 rounded-2xl border border-pink-100 text-center">
+                        <p class="text-[11px] font-bold text-pink-500 uppercase">Estado de Ánimo</p>
+                        <p id="lobo-view-mood" class="text-lg font-extrabold text-gray-800 mt-1">Esperando...</p>
+                    </div>
+                    <div class="bg-purple-50/90 p-3.5 rounded-2xl border border-purple-100 text-center">
+                        <p class="text-[11px] font-bold text-purple-500 uppercase">Nivel de Energía</p>
+                        <p id="lobo-view-energy" class="text-lg font-extrabold text-gray-800 mt-1">--%</p>
+                        <div class="w-full bg-gray-200 h-2 rounded-full mt-1.5 overflow-hidden">
+                            <div id="lobo-energy-bar" class="bg-gradient-to-r from-pink-500 to-purple-600 h-full transition-all duration-500" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notita que dejó la Loba -->
+                <div id="lobo-note-box" class="hidden mt-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
+                    <b>📝 Nota de tu Loba:</b> <span id="lobo-view-note" class="italic"></span>
+                </div>
+            </div>
+
+            <!-- MANUAL DE SUPERVIVENCIA / CONSEJOS PARA EL LOBO -->
+            <div class="glass rounded-3xl p-5 shadow-lg bg-gradient-to-br from-indigo-900 to-purple-900 text-white">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-2xl">💡</span>
+                    <h3 class="font-bold text-base text-pink-200">Misión del Lobo para Hoy</h3>
+                </div>
+                <p id="lobo-smart-advice" class="text-sm leading-relaxed text-gray-100 font-medium">
+                    Cargando recomendaciones personalizadas según su ciclo y su energía...
+                </p>
+            </div>
+
+            <!-- ESTADO DEL CICLO Y PREDICCIONES PARA EL LOBO -->
+            <div class="glass rounded-3xl p-5 shadow-lg">
+                <h3 class="font-bold text-gray-800 text-base mb-3">🌙 Fase Hormonal y Predicción</h3>
+                <div class="p-4 rounded-2xl bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-100 mb-3">
+                    <div class="flex justify-between items-center">
+                        <span id="lobo-phase-name" class="font-extrabold text-pink-600 text-base">Fase Regular</span>
+                        <span id="lobo-cycle-day" class="text-xs font-bold bg-white px-2.5 py-1 rounded-full text-gray-700 shadow-sm">Día --</span>
+                    </div>
+                    <p id="lobo-phase-desc" class="text-xs text-gray-600 mt-1.5 leading-relaxed"></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5 text-center text-xs">
+                    <div class="p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                        <p class="text-gray-400 font-semibold">Próximo Periodo Estimado</p>
+                        <p id="lobo-next-period" class="text-sm font-extrabold text-rose-600 mt-1">--</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                        <p class="text-gray-400 font-semibold">Duración Promedio</p>
+                        <p id="lobo-avg-len" class="text-sm font-extrabold text-purple-600 mt-1">28 días</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SÍNTOMAS Y ANTOJOS REPORTADOS HOY -->
+            <div class="glass rounded-3xl p-5 shadow-lg">
+                <h3 class="font-bold text-gray-800 text-base mb-3">🍫 Síntomas y Antojos de Hoy</h3>
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <span class="font-bold text-gray-400 uppercase">Síntomas físicos:</span>
+                        <div id="lobo-symptoms-list" class="flex flex-wrap gap-1.5 mt-1.5">
+                            <span class="text-gray-400 italic">Ninguno registrado hoy</span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-gray-100">
+                        <span class="font-bold text-gray-400 uppercase">Antojos o necesidades:</span>
+                        <div id="lobo-cravings-list" class="flex flex-wrap gap-1.5 mt-1.5">
+                            <span class="text-gray-400 italic">Ninguno registrado hoy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ENVIAR MENSAJITO BONITO PERSONALIZADO A LA LOBA -->
+            <div class="glass rounded-3xl p-5 shadow-lg">
+                <h3 class="font-bold text-gray-800 text-sm mb-1">💌 Mandarle un Mensajito Bonito a mi Loba</h3>
+                <p class="text-xs text-gray-500 mb-3">Lo que escribas aquí le aparecerá hasta arriba de su pantalla y cuando registre su estado de ánimo:</p>
+                <textarea id="lobo-custom-msg" rows="2" placeholder="Ej. Mi Loba hermosa, hoy te llevo tu chocolate favorito saliendo..." 
+                    class="w-full p-3 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-purple-500 mb-2"></textarea>
+                <button onclick="enviarMensajeBonitoLobo()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-xs shadow-md">
+                    Actualizar Mensaje en su Celular ✨
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- LOGICA COMPLETA Y FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // TUS CREDENCIALES EXACTAS
+        // CREDENCIALES DEL PROYECTO LOBA
         const firebaseConfig = {
             apiKey: "AIzaSyCWhFBT24e5M6RbObTyvGXT5AJJikcikq8",
             authDomain: "loba-e6a26.firebaseapp.com",
@@ -143,107 +529,708 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let miCodigo = "";
-        let sintomasActuales = [];
-        let enPeriodo = false;
+        // ESTADO GLOBAL DE LA APP
+        let rolActual = localStorage.getItem('loba_rol') || null;
+        let codigoActual = localStorage.getItem('loba_codigo') || null;
+        let unsubscribeSnapshot = null;
 
-        // Autenticación anónima
+        // Datos sincronizados en Firebase
+        let datosPareja = {
+            iniciosCiclo: [],       // Array de fechas 'YYYY-MM-DD' donde empezó cada periodo
+            diasSangrado: [],       // Array de todos los días 'YYYY-MM-DD' marcados con sangrado
+            registrosDiarios: {},   // { 'YYYY-MM-DD': { sintomas: [], antojos: [] } }
+            checkinHoy: {
+                fecha: '',
+                animo: 'Feliz ✨',
+                energia: 4,
+                nota: ''
+            },
+            mensajeDelLobo: ''
+        };
+
+        // Variables del Calendario y Check-in
+        const hoyStr = obtenerFechaISO(new Date());
+        let fechaSeleccionada = hoyStr;
+        let mesCalendario = new Date().getMonth();
+        let anioCalendario = new Date().getFullYear();
+        let tempMood = 'Feliz ✨';
+        let tempEnergy = 4;
+
+        // Banco de Mensajitos Bonitos Automáticos para la Loba
+        const MENSAGES_BONITOS = {
+            'Sensible 🥺': "Mi Loba hermosa, está bien sentirse sensible hoy. No tienes que poder con todo tú sola; aquí está tu Lobo para abrazarte fuerte y cuidarte todo el día. 🐺❤️",
+            'Irritada 💢': "Respira profundo, mi niña bonita. Sé que hoy es un día pesado, pero recuerda que te amo con todo mi corazón y estoy de tu lado siempre. 🌸✨",
+            'Triste 🌧️': "Oye, mi Loba preciosa: incluso en los días nublados sigues siendo la mujer más maravillosa del mundo. Te mando mil besos y un abrazo que te reinicie el alma. 🫂💖",
+            'Ansiosa 🌀': "Paso a pasito, mi amor. Todo va a estar bien. Tu Lobo está orgulloso de ti y de todo lo que haces cada día. Respira, te amo muchísimo. 🌙🐺",
+            'Con antojos 🍫': "¡Alerta recibida por el Lobo! 🍫 Mereces que te consientan hoy y siempre, porque eres lo más bonito de mi vida. 🥰",
+            'default': "¡Buenos días a la Loba más preciosa! Que nunca se te olvide cuánto te admiro, cuánto me encantas y lo feliz que me hace ser tu Lobo. 🐺💖✨"
+        };
+
+        // Utilidad de Fechas
+        function obtenerFechaISO(dateObj) {
+            const offset = dateObj.getTimezoneOffset();
+            const local = new Date(dateObj.getTime() - (offset * 60 * 1000));
+            return local.toISOString().split('T')[0];
+        }
+
+        function formatearFechaCorta(isoStr) {
+            if (!isoStr) return '--';
+            const [y, m, d] = isoStr.split('-').map(Number);
+            const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            return `${d} ${meses[m - 1]}`;
+        }
+
+        function mostrarErrorFirebase(msg) {
+            const box = document.getElementById('error-box');
+            const txt = document.getElementById('error-text');
+            box.classList.remove('hidden');
+            txt.innerHTML = msg;
+        }
+
+        // 1. INICIALIZAR CONEXIÓN CON FIREBASE
         signInAnonymously(auth).then(() => {
-            document.getElementById('status-msg').classList.add('hidden');
-            document.getElementById('screen-role').classList.remove('hidden');
-        }).catch((error) => {
-            document.getElementById('status-msg').innerText = "Error de conexión: Activa el modo anónimo en Firebase.";
+            document.getElementById('screen-loading').classList.add('hidden');
+            document.getElementById('sync-badge').innerText = "🟢 Conectado a la nube";
+
+            if (rolActual && codigoActual) {
+                document.getElementById('btn-reset-session').classList.remove('hidden');
+                iniciarEscuchaTiempoReal(codigoActual);
+                if (rolActual === 'loba') {
+                    mostrarDashboardLoba(true); // Abre el check-in al entrar
+                } else {
+                    mostrarDashboardLobo();
+                }
+            } else {
+                document.getElementById('screen-role').classList.remove('hidden');
+            }
+        }).catch((err) => {
+            document.getElementById('screen-loading').classList.add('hidden');
+            mostrarErrorFirebase(`No se pudo autenticar (${err.code}). Verifica que "Anónimo" esté habilitado en Authentication y que tu dominio github.io esté en Authorized Domains.`);
         });
 
-        // Funciones Globales para el HTML
-        window.elegirRol = function(rol) {
+        // 2. FLUJO DE SELECCIÓN DE ROL Y VINCULACIÓN
+        window.seleccionarRol = async function(rol) {
+            rolActual = rol;
             document.getElementById('screen-role').classList.add('hidden');
-            if(rol === 'novia') {
-                miCodigo = Math.random().toString(36).substring(2, 7).toUpperCase();
-                document.getElementById('couple-code-display').innerText = miCodigo;
-                document.getElementById('screen-code').classList.remove('hidden');
-                
-                // Crear documento vacío en Firebase
-                setDoc(doc(db, "parejas", miCodigo), { sintomas: [], periodo: false });
-            } else {
-                document.getElementById('screen-join').classList.remove('hidden');
-            }
-        }
+            document.getElementById('screen-link').classList.remove('hidden');
+            document.getElementById('btn-reset-session').classList.remove('hidden');
 
-        window.entrarDashboardNovia = function() {
-            document.getElementById('screen-code').classList.add('hidden');
-            document.getElementById('dashboard-novia').classList.remove('hidden');
-        }
+            if (rol === 'loba') {
+                document.getElementById('link-loba-view').classList.remove('hidden');
+                document.getElementById('link-lobo-view').classList.add('hidden');
 
-        window.unirseNovio = function() {
-            const codigo = document.getElementById('input-code').value.toUpperCase();
-            if(codigo.length === 5) {
-                document.getElementById('screen-join').classList.add('hidden');
-                document.getElementById('dashboard-novio').classList.remove('hidden');
-                escucharDatos(codigo);
-            }
-        }
-
-        // Lógica de la Novia
-        window.toggleSintoma = function(sintoma) {
-            if(sintomasActuales.includes(sintoma)) {
-                sintomasActuales = sintomasActuales.filter(s => s !== sintoma);
-            } else {
-                sintomasActuales.push(sintoma);
-            }
-            actualizarFirebase();
-            // Cambiar color de botones
-            document.querySelectorAll('.symptom-btn').forEach(btn => {
-                if(sintomasActuales.includes(btn.innerText.split(' ')[0])) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-        }
-
-        window.togglePeriodo = function() {
-            enPeriodo = !enPeriodo;
-            const btn = document.getElementById('btn-periodo');
-            btn.style.backgroundColor = enPeriodo ? 'var(--primary)' : '#7bed9f';
-            btn.style.color = 'white';
-            btn.innerText = enPeriodo ? "🩸 En Periodo" : "🩸 Marcar Inicio de Periodo";
-            actualizarFirebase();
-        }
-
-        function actualizarFirebase() {
-            setDoc(doc(db, "parejas", miCodigo), {
-                sintomas: sintomasActuales,
-                periodo: enPeriodo
-            }, { merge: true });
-        }
-
-        // Lógica del Novio (Escucha en tiempo real)
-        function escucharDatos(codigo) {
-            onSnapshot(doc(db, "parejas", codigo), (doc) => {
-                if (doc.exists()) {
-                    const data = doc.data();
-                    let html = `<p><b>Estado del ciclo:</b> ${data.periodo ? '🩸 Está en su periodo' : '🌸 Fase regular'}</p>`;
-                    html += `<p><b>Se siente:</b> ${data.sintomas.length > 0 ? data.sintomas.join(', ') : 'Todo tranquilo'}</p>`;
-                    document.getElementById('novio-status').innerHTML = html;
-
-                    // Generar Tips
-                    const tipsDiv = document.getElementById('novio-tips');
-                    tipsDiv.classList.remove('hidden');
-                    if(data.sintomas.includes('Sensible')) {
-                        tipsDiv.innerHTML = "💡 <b>Tip de novio:</b> Está sensible. Mándale un mensajito lindo y tenle mucha paciencia hoy.";
-                    } else if(data.sintomas.includes('Cólicos')) {
-                        tipsDiv.innerHTML = "💡 <b>Tip de novio:</b> ¡Alerta de cólicos! Prepárale un té caliente, llévale un chocolate o dale un masajito.";
-                    } else if(data.sintomas.includes('Cansada')) {
-                        tipsDiv.innerHTML = "💡 <b>Tip de novio:</b> Hoy necesita descansar. Ayúdale con alguna de sus tareas o propón una tarde de películas en cama.";
-                    } else {
-                        tipsDiv.innerHTML = "💡 <b>Tip de novio:</b> Todo va bien. ¡Dile lo mucho que la quieres!";
+                // Generar código de 5 caracteres claros
+                if (!codigoActual) {
+                    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                    let generado = "";
+                    for (let i = 0; i < 5; i++) {
+                        generado += chars.charAt(Math.floor(Math.random() * chars.length));
                     }
-                } else {
-                    document.getElementById('novio-status').innerText = "Código incorrecto o novia aún no conectada.";
+                    codigoActual = generado;
                 }
+                document.getElementById('generated-code').innerText = codigoActual;
+
+                // Guardar inmediatamente la sala en Firestore
+                try {
+                    await setDoc(doc(db, "parejas", codigoActual), {
+                        creado: hoyStr,
+                        iniciosCiclo: [],
+                        diasSangrado: [],
+                        registrosDiarios: {},
+                        checkinHoy: { fecha: hoyStr, animo: 'Feliz ✨', energia: 4, nota: '' },
+                        mensajeDelLobo: ''
+                    }, { merge: true });
+                    localStorage.setItem('loba_rol', 'loba');
+                    localStorage.setItem('loba_codigo', codigoActual);
+                } catch (e) {
+                    mostrarErrorFirebase(`Error al guardar el código en la base de datos (${e.code}). <b>Solución:</b> Entra a Firebase -> Firestore Database -> Crear base de datos (en Modo de Prueba) o verifica en la pestaña "Reglas" que diga <code>allow read, write: if true;</code>.`);
+                }
+            } else {
+                document.getElementById('link-lobo-view').classList.remove('hidden');
+                document.getElementById('link-loba-view').classList.add('hidden');
+            }
+        };
+
+        window.copiarCodigo = function() {
+            navigator.clipboard.writeText(codigoActual);
+            alert(`¡Código ${codigoActual} copiado! Mándaselo a tu Lobo 🐺`);
+        };
+
+        window.confirmarEntradaLoba = function() {
+            document.getElementById('screen-link').classList.add('hidden');
+            iniciarEscuchaTiempoReal(codigoActual);
+            mostrarDashboardLoba(true);
+        };
+
+        window.recuperarCodigoLoba = function() {
+            const code = document.getElementById('recover-code-loba').value.trim().toUpperCase();
+            if (code.length < 4) return alert("Escribe un código válido.");
+            codigoActual = code;
+            localStorage.setItem('loba_rol', 'loba');
+            localStorage.setItem('loba_codigo', codigoActual);
+            confirmarEntradaLoba();
+        };
+
+        window.conectarLobo = async function() {
+            const code = document.getElementById('input-lobo-code').value.trim().toUpperCase();
+            if (code.length < 4) return alert("Por favor ingresa el código completo de tu Loba.");
+
+            try {
+                const docRef = doc(db, "parejas", code);
+                const snap = await getDoc(docRef);
+                if (!snap.exists()) {
+                    // Si aún no existía, lo inicializamos para que conecten sin bloqueo
+                    await setDoc(docRef, {
+                        creado: hoyStr,
+                        iniciosCiclo: [],
+                        diasSangrado: [],
+                        registrosDiarios: {},
+                        checkinHoy: { fecha: hoyStr, animo: 'Feliz ✨', energia: 4, nota: '' }
+                    }, { merge: true });
+                }
+                codigoActual = code;
+                localStorage.setItem('loba_rol', 'lobo');
+                localStorage.setItem('loba_codigo', codigoActual);
+                document.getElementById('screen-link').classList.add('hidden');
+                iniciarEscuchaTiempoReal(codigoActual);
+                mostrarDashboardLobo();
+            } catch (e) {
+                mostrarErrorFirebase(`No se pudo leer la base de datos (${e.code}). Asegúrate de haber creado Firestore Database en Modo de Prueba dentro de Firebase.`);
+            }
+        };
+
+        window.cambiarRol = function() {
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+            localStorage.removeItem('loba_rol');
+            localStorage.removeItem('loba_codigo');
+            rolActual = null;
+            codigoActual = null;
+            location.reload();
+        };
+
+        // 3. SINCRONIZACIÓN EN TIEMPO REAL
+        function iniciarEscuchaTiempoReal(codigo) {
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+            unsubscribeSnapshot = onSnapshot(doc(db, "parejas", codigo), (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.data();
+                    datosPareja = {
+                        iniciosCiclo: data.iniciosCiclo || [],
+                        diasSangrado: data.diasSangrado || [],
+                        registrosDiarios: data.registrosDiarios || {},
+                        checkinHoy: data.checkinHoy || { fecha: hoyStr, animo: 'Feliz ✨', energia: 4, nota: '' },
+                        mensajeDelLobo: data.mensajeDelLobo || ''
+                    };
+                    if (rolActual === 'loba') {
+                        renderizarVistaLoba();
+                    } else if (rolActual === 'lobo') {
+                        renderizarVistaLobo();
+                    }
+                }
+            }, (error) => {
+                mostrarErrorFirebase(`Error de sincronización en vivo (${error.code}). Revisa las Reglas de Firestore Database.`);
             });
         }
+
+        async function guardarEnFirebase() {
+            if (!codigoActual) return;
+            try {
+                await setDoc(doc(db, "parejas", codigoActual), datosPareja, { merge: true });
+            } catch (e) {
+                mostrarErrorFirebase(`No se pudieron guardar los cambios (${e.code}).`);
+            }
+        }
+
+        // =========================================================================
+        // 4. ALGORITMO PREDICTIVO DEL CICLO (MEDIA MÓVIL PONDERADA)
+        // =========================================================================
+        function calcularPrediccionCiclo() {
+            // Ordenar fechas de inicio de menor a mayor
+            const inicios = [...new Set(datosPareja.iniciosCiclo)].sort();
+            
+            if (inicios.length === 0) {
+                return {
+                    tieneDatos: false,
+                    promedioCiclo: 28,
+                    diaActualCiclo: null,
+                    faseNombre: 'Sin registros aún',
+                    faseDescLobo: 'En cuanto tu Loba marque el primer día de su periodo en el calendario, calcularé sus fases hormonales y predicciones.',
+                    proximoPeriodoISO: null,
+                    diasParaProximo: null,
+                    ventanaFertilInicioISO: null,
+                    ovulacionISO: null,
+                    prediccionesFuturasSet: new Set(),
+                    fertilSet: new Set(),
+                    ovulacionSet: new Set()
+                };
+            }
+
+            // 1. Calcular intervalos reales entre cada inicio de periodo
+            let intervalos = [];
+            for (let i = 1; i < inicios.length; i++) {
+                const d1 = new Date(inicios[i - 1] + 'T00:00:00');
+                const d2 = new Date(inicios[i] + 'T00:00:00');
+                const diffDias = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+                // Filtramos ciclos atípicos (menores a 18 o mayores a 50 días por olvido de registro)
+                if (diffDias >= 18 && diffDias <= 50) {
+                    intervalos.push(diffDias);
+                }
+            }
+
+            // 2. Calcular Promedio Móvil Ponderado (los últimos ciclos pesan más)
+            let promedioCiclo = 28;
+            if (intervalos.length > 0) {
+                const ultimos = intervalos.slice(-6); // Tomamos hasta los últimos 6 ciclos
+                let sumaPonderada = 0;
+                let sumaPesos = 0;
+                ultimos.forEach((duracion, idx) => {
+                    const peso = idx + 1; // El más reciente tiene mayor peso
+                    sumaPonderada += duracion * peso;
+                    sumaPesos += peso;
+                });
+                promedioCiclo = Math.round(sumaPonderada / sumaPesos);
+            }
+
+            // 3. Calcular día actual del ciclo respecto al último periodo registrado
+            const ultimoInicioStr = inicios[inicios.length - 1];
+            const ultimoInicioDate = new Date(ultimoInicioStr + 'T00:00:00');
+            const hoyDate = new Date(hoyStr + 'T00:00:00');
+            const diaActualCiclo = Math.floor((hoyDate - ultimoInicioDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            // 4. Proyectar los próximos 3 ciclos completos para pintar en el calendario
+            const prediccionesFuturasSet = new Set();
+            const fertilSet = new Set();
+            const ovulacionSet = new Set();
+
+            let proximoPeriodoISO = null;
+            let ovulacionActualISO = null;
+
+            for (let c = 1; c <= 3; c++) {
+                const inicioProyectado = new Date(ultimoInicioDate);
+                inicioProyectado.setDate(inicioProyectado.getDate() + (promedioCiclo * c));
+                const isoInicio = obtenerFechaISO(inicioProyectado);
+                if (c === 1) proximoPeriodoISO = isoInicio;
+
+                // 5 días estimados de sangrado por ciclo proyectado
+                for (let d = 0; d < 5; d++) {
+                    const diaSangrado = new Date(inicioProyectado);
+                    diaSangrado.setDate(diaSangrado.getDate() + d);
+                    prediccionesFuturasSet.add(obtenerFechaISO(diaSangrado));
+                }
+
+                // La ovulación ocurre aprox 14 días ANTES del inicio del siguiente periodo
+                const fechaOvulacion = new Date(inicioProyectado);
+                fechaOvulacion.setDate(fechaOvulacion.getDate() - 14);
+                const isoOv = obtenerFechaISO(fechaOvulacion);
+                ovulacionSet.add(isoOv);
+                if (c === 1) ovulacionActualISO = isoOv;
+
+                // Ventana fértil: 4 días antes de ovulación + día de ovulación + 1 día después
+                for (let f = -4; f <= 1; f++) {
+                    const diaFertil = new Date(fechaOvulacion);
+                    diaFertil.setDate(diaFertil.getDate() + f);
+                    fertilSet.add(obtenerFechaISO(diaFertil));
+                }
+            }
+
+            const proximoDate = new Date(proximoPeriodoISO + 'T00:00:00');
+            const diasParaProximo = Math.round((proximoDate - hoyDate) / (1000 * 60 * 60 * 24));
+
+            // 5. Determinar Fase Hormonal Actual
+            const diaOvulacionEstimado = promedioCiclo - 14;
+            let faseNombre = "";
+            let faseDescLobo = "";
+
+            if (datosPareja.diasSangrado.includes(hoyStr) || (diaActualCiclo >= 1 && diaActualCiclo <= 5)) {
+                faseNombre = "🩸 Fase Menstrual";
+                faseDescLobo = "Sus hormonas están en su punto más bajo. Es normal que sienta cansancio físico o cólicos. Prioriza su comodidad, calorcito y cero estrés.";
+            } else if (diaActualCiclo < diaOvulacionEstimado - 3) {
+                faseNombre = "🌱 Fase Folicular";
+                faseDescLobo = "Su estrógeno está subiendo. Notarás que tiene más energía, buen humor y ganas de hacer planes juntos.";
+            } else if (diaActualCiclo >= diaOvulacionEstimado - 3 && diaActualCiclo <= diaOvulacionEstimado + 1) {
+                faseNombre = "✨ Fase de Ovulación";
+                faseDescLobo = "Pico de energía y confianza. Es cuando se siente más radiante y cariñosa. ¡Invítala a salir o hazle muchos cumplidos!";
+            } else {
+                faseNombre = "🌙 Fase Lútea (Pre-menstrual)";
+                faseDescLobo = "Sube la progesterona y luego baja antes del periodo. Puede tener menos batería, antojos o estar más sensible. ¡Modo Lobo protector al 100%!";
+            }
+
+            return {
+                tieneDatos: true,
+                promedioCiclo,
+                diaActualCiclo,
+                faseNombre,
+                faseDescLobo,
+                proximoPeriodoISO,
+                diasParaProximo,
+                ovulacionISO: ovulacionActualISO,
+                prediccionesFuturasSet,
+                fertilSet,
+                ovulacionSet
+            };
+        }
+
+        // =========================================================================
+        // 5. FUNCIONES DEL CHECK-IN DIARIO Y MENSAJITO BONITO (LOBA)
+        // =========================================================================
+        window.abrirModalCheckin = function() {
+            document.getElementById('modal-checkin').classList.remove('hidden');
+            document.getElementById('checkin-form-step').classList.remove('hidden');
+            document.getElementById('checkin-message-step').classList.add('hidden');
+            
+            tempMood = datosPareja.checkinHoy?.animo || 'Feliz ✨';
+            tempEnergy = datosPareja.checkinHoy?.energia || 4;
+            document.getElementById('checkin-note').value = datosPareja.checkinHoy?.nota || '';
+            
+            selectCheckinMood(tempMood);
+            selectCheckinEnergy(tempEnergy);
+        };
+
+        window.cerrarModalCheckin = function() {
+            document.getElementById('modal-checkin').classList.add('hidden');
+        };
+
+        window.selectCheckinMood = function(mood) {
+            tempMood = mood;
+            document.querySelectorAll('.checkin-mood-btn').forEach(btn => {
+                if (btn.innerText === mood) {
+                    btn.classList.add('chip-active');
+                } else {
+                    btn.classList.remove('chip-active');
+                }
+            });
+        };
+
+        window.selectCheckinEnergy = function(level) {
+            tempEnergy = level;
+            const buttons = document.querySelectorAll('.checkin-energy-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx + 1 === level) {
+                    btn.classList.add('energy-active');
+                } else {
+                    btn.classList.remove('energy-active');
+                }
+            });
+        };
+
+        window.guardarCheckinDiario = async function() {
+            const nota = document.getElementById('checkin-note').value.trim();
+            datosPareja.checkinHoy = {
+                fecha: hoyStr,
+                animo: tempMood,
+                energia: tempEnergy,
+                nota: nota
+            };
+
+            // Elegir mensajito bonito: si el Lobo escribió uno personalizado, mostrarlo junto con el del estado de ánimo
+            const msgBase = MENSAGES_BONITOS[tempMood] || MENSAGES_BONITOS['default'];
+            const msgFinal = datosPareja.mensajeDelLobo 
+                ? `"${datosPareja.mensajeDelLobo}"\n\n— ${msgBase}`
+                : msgBase;
+
+            document.getElementById('sweet-message-text').innerText = msgFinal;
+            document.getElementById('checkin-form-step').classList.add('hidden');
+            document.getElementById('checkin-message-step').classList.remove('hidden');
+
+            await guardarEnFirebase();
+            renderizarVistaLoba();
+        };
+
+        // =========================================================================
+        // 6. VISTAS Y CONTROLES DE LA LOBA
+        // =========================================================================
+        function mostrarDashboardLoba(abrirCheckinAlIniciar) {
+            document.getElementById('dashboard-loba').classList.remove('hidden');
+            document.getElementById('dashboard-lobo').classList.add('hidden');
+            document.getElementById('loba-code-pill').innerText = codigoActual;
+            renderizarVistaLoba();
+            if (abrirCheckinAlIniciar) {
+                abrirModalCheckin();
+            }
+        }
+
+        function renderizarVistaLoba() {
+            const pred = calcularPrediccionCiclo();
+
+            // Actualizar banner de mensaje bonito
+            const msgBase = MENSAGES_BONITOS[datosPareja.checkinHoy?.animo] || MENSAGES_BONITOS['default'];
+            document.getElementById('loba-banner-msg').innerText = datosPareja.mensajeDelLobo 
+                ? `"${datosPareja.mensajeDelLobo}" ❤️` 
+                : msgBase;
+
+            // Actualizar resumen de ánimo y energía
+            document.getElementById('loba-current-mood').innerText = datosPareja.checkinHoy?.animo || 'Feliz ✨';
+            document.getElementById('loba-current-energy').innerText = `${(datosPareja.checkinHoy?.energia || 4) * 20}%`;
+
+            // Actualizar cabecera de ciclo
+            document.getElementById('loba-phase-badge').innerText = pred.faseNombre;
+            document.getElementById('stat-avg-cycle').innerText = `${pred.promedioCiclo} días`;
+
+            if (pred.tieneDatos) {
+                document.getElementById('loba-cycle-title').innerText = `Día ${pred.diaActualCiclo} del ciclo`;
+                if (pred.diasParaProximo > 0) {
+                    document.getElementById('loba-cycle-subtitle').innerText = `Próximo periodo estimado en ${pred.diasParaProximo} días`;
+                } else if (pred.diasParaProximo === 0) {
+                    document.getElementById('loba-cycle-subtitle').innerText = `Tu periodo está pronosticado para hoy`;
+                } else {
+                    document.getElementById('loba-cycle-subtitle').innerText = `Retraso de ${Math.abs(pred.diasParaProximo)} días respecto al promedio`;
+                }
+                document.getElementById('stat-next-period').innerText = formatearFechaCorta(pred.proximoPeriodoISO);
+                document.getElementById('stat-fertile').innerText = formatearFechaCorta(pred.ovulacionISO);
+            }
+
+            renderizarCalendario(pred);
+            renderizarChipsDiaSeleccionado();
+            renderizarHistorialCiclos();
+        }
+
+        function renderizarCalendario(pred) {
+            const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('cal-month-title').innerText = `${nombresMeses[mesCalendario]} ${anioCalendario}`;
+
+            const primerDiaSemana = new Date(anioCalendario, mesCalendario, 1).getDay();
+            const totalDiasMes = new Date(anioCalendario, mesCalendario + 1, 0).getDate();
+            const grid = document.getElementById('calendar-days');
+            grid.innerHTML = '';
+
+            // Espacios vacíos antes del día 1
+            for (let i = 0; i < primerDiaSemana; i++) {
+                grid.innerHTML += `<div></div>`;
+            }
+
+            for (let dia = 1; dia <= totalDiasMes; dia++) {
+                const mStr = String(mesCalendario + 1).padStart(2, '0');
+                const dStr = String(dia).padStart(2, '0');
+                const fechaISO = `${anioCalendario}-${mStr}-${dStr}`;
+
+                let clases = "cal-day bg-white/80 text-gray-700 ";
+                if (datosPareja.diasSangrado.includes(fechaISO)) {
+                    clases += "day-period ";
+                } else if (pred.ovulacionSet.has(fechaISO)) {
+                    clases += "day-ovulation ";
+                } else if (pred.prediccionesFuturasSet.has(fechaISO)) {
+                    clases += "day-predicted ";
+                } else if (pred.fertilSet.has(fechaISO)) {
+                    clases += "day-fertile ";
+                }
+
+                if (fechaISO === fechaSeleccionada) {
+                    clases += "day-selected ";
+                }
+
+                // Puntito indicador si tiene síntomas o antojos ese día
+                const reg = datosPareja.registrosDiarios[fechaISO];
+                const tieneNotas = reg && ((reg.sintomas && reg.sintomas.length > 0) || (reg.antojos && reg.antojos.length > 0));
+                const dotHTML = tieneNotas ? `<span class="w-1.5 h-1.5 rounded-full bg-pink-500 mt-0.5"></span>` : '';
+
+                grid.innerHTML += `
+                    <div onclick="seleccionarFechaCalendario('${fechaISO}')" class="${clases}">
+                        <span>${dia}</span>
+                        ${dotHTML}
+                    </div>
+                `;
+            }
+        }
+
+        window.cambiarMes = function(delta) {
+            mesCalendario += delta;
+            if (mesCalendario < 0) { mesCalendario = 11; anioCalendario--; }
+            if (mesCalendario > 11) { mesCalendario = 0; anioCalendario++; }
+            renderizarVistaLoba();
+        };
+
+        window.seleccionarFechaCalendario = function(fechaISO) {
+            fechaSeleccionada = fechaISO;
+            renderizarVistaLoba();
+        };
+
+        window.registrarInicioPeriodoHoy = async function() {
+            if (!datosPareja.iniciosCiclo.includes(hoyStr)) {
+                datosPareja.iniciosCiclo.push(hoyStr);
+            }
+            // Marcar hoy y los siguientes 4 días como sangrado inicial editable
+            const baseDate = new Date(hoyStr + 'T00:00:00');
+            for (let i = 0; i < 5; i++) {
+                const d = new Date(baseDate);
+                d.setDate(d.getDate() + i);
+                const iso = obtenerFechaISO(d);
+                if (!datosPareja.diasSangrado.includes(iso)) {
+                    datosPareja.diasSangrado.push(iso);
+                }
+            }
+            await guardarEnFirebase();
+        };
+
+        window.togglePeriodoEnFechaSeleccionada = async function() {
+            const idx = datosPareja.diasSangrado.indexOf(fechaSeleccionada);
+            if (idx > -1) {
+                datosPareja.diasSangrado.splice(idx, 1);
+                datosPareja.iniciosCiclo = datosPareja.iniciosCiclo.filter(f => f !== fechaSeleccionada);
+            } else {
+                datosPareja.diasSangrado.push(fechaSeleccionada);
+                // Si el día anterior no tenía sangrado, también lo registramos como inicio de ciclo
+                const dAnt = new Date(fechaSeleccionada + 'T00:00:00');
+                dAnt.setDate(dAnt.getDate() - 1);
+                const isoAnt = obtenerFechaISO(dAnt);
+                if (!datosPareja.diasSangrado.includes(isoAnt) && !datosPareja.iniciosCiclo.includes(fechaSeleccionada)) {
+                    datosPareja.iniciosCiclo.push(fechaSeleccionada);
+                }
+            }
+            await guardarEnFirebase();
+        };
+
+        function renderizarChipsDiaSeleccionado() {
+            document.getElementById('selected-date-label').innerText = fechaSeleccionada === hoyStr 
+                ? `Hoy (${formatearFechaCorta(fechaSeleccionada)})` 
+                : `Día seleccionado: ${formatearFechaCorta(fechaSeleccionada)}`;
+
+            const btnSangrado = document.getElementById('btn-toggle-day-period');
+            if (datosPareja.diasSangrado.includes(fechaSeleccionada)) {
+                btnSangrado.innerText = "🩸 Quitar sangrado de este día";
+                btnSangrado.className = "text-xs px-3 py-1.5 rounded-xl bg-rose-600 text-white font-bold transition";
+            } else {
+                btnSangrado.innerText = "🩸 Marcar sangrado este día";
+                btnSangrado.className = "text-xs px-3 py-1.5 rounded-xl border border-rose-300 text-rose-600 font-bold hover:bg-rose-50 transition";
+            }
+
+            const reg = datosPareja.registrosDiarios[fechaSeleccionada] || { sintomas: [], antojos: [] };
+
+            document.querySelectorAll('.sym-chip').forEach(btn => {
+                if ((reg.sintomas || []).includes(btn.innerText)) btn.classList.add('chip-active');
+                else btn.classList.remove('chip-active');
+            });
+
+            document.querySelectorAll('.crav-chip').forEach(btn => {
+                if ((reg.antojos || []).includes(btn.innerText)) btn.classList.add('chip-active');
+                else btn.classList.remove('chip-active');
+            });
+        }
+
+        window.toggleItemDia = async function(tipo, valor) {
+            if (!datosPareja.registrosDiarios[fechaSeleccionada]) {
+                datosPareja.registrosDiarios[fechaSeleccionada] = { sintomas: [], antojos: [] };
+            }
+            const lista = datosPareja.registrosDiarios[fechaSeleccionada][tipo] || [];
+            const idx = lista.indexOf(valor);
+            if (idx > -1) lista.splice(idx, 1);
+            else lista.push(valor);
+            datosPareja.registrosDiarios[fechaSeleccionada][tipo] = lista;
+            await guardarEnFirebase();
+        };
+
+        window.agregarFechaHistorial = async function() {
+            const val = document.getElementById('input-past-cycle').value;
+            if (!val) return;
+            if (!datosPareja.iniciosCiclo.includes(val)) {
+                datosPareja.iniciosCiclo.push(val);
+            }
+            if (!datosPareja.diasSangrado.includes(val)) {
+                datosPareja.diasSangrado.push(val);
+            }
+            document.getElementById('input-past-cycle').value = '';
+            await guardarEnFirebase();
+        };
+
+        window.eliminarFechaHistorial = async function(fecha) {
+            datosPareja.iniciosCiclo = datosPareja.iniciosCiclo.filter(f => f !== fecha);
+            await guardarEnFirebase();
+        };
+
+        function renderizarHistorialCiclos() {
+            const cont = document.getElementById('cycle-history-list');
+            const ordenados = [...new Set(datosPareja.iniciosCiclo)].sort().reverse();
+            if (ordenados.length === 0) {
+                cont.innerHTML = `<span class="text-xs text-gray-400 italic">Aún no hay inicios registrados.</span>`;
+                return;
+            }
+            cont.innerHTML = ordenados.map(f => `
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-pink-50 border border-pink-200 text-xs font-bold text-pink-700">
+                    🩸 ${formatearFechaCorta(f)} (${f.slice(0,4)})
+                    <button onclick="eliminarFechaHistorial('${f}')" class="text-rose-400 hover:text-rose-700">✕</button>
+                </span>
+            `).join('');
+        }
+
+        // =========================================================================
+        // 7. VISTAS Y CONTROLES DEL LOBO
+        // =========================================================================
+        function mostrarDashboardLobo() {
+            document.getElementById('dashboard-lobo').classList.remove('hidden');
+            document.getElementById('dashboard-loba').classList.add('hidden');
+            renderizarVistaLobo();
+        }
+
+        function renderizarVistaLobo() {
+            const pred = calcularPrediccionCiclo();
+            const checkin = datosPareja.checkinHoy || { animo: 'Feliz ✨', energia: 4, nota: '' };
+            const regHoy = datosPareja.registrosDiarios[hoyStr] || { sintomas: [], antojos: [] };
+
+            // 1. Ánimo y Batería de Energía
+            document.getElementById('lobo-view-mood').innerText = checkin.animo || 'Sin reporte';
+            const porcentajeEnergia = (checkin.energia || 4) * 20;
+            document.getElementById('lobo-view-energy').innerText = `${porcentajeEnergia}%`;
+            document.getElementById('lobo-energy-bar').style.width = `${porcentajeEnergia}%`;
+
+            // Nota de la Loba
+            const noteBox = document.getElementById('lobo-note-box');
+            if (checkin.nota) {
+                noteBox.classList.remove('hidden');
+                document.getElementById('lobo-view-note').innerText = `"${checkin.nota}"`;
+            } else {
+                noteBox.classList.add('hidden');
+            }
+
+            // 2. Fase del ciclo y predicciones
+            document.getElementById('lobo-phase-name').innerText = pred.faseNombre;
+            document.getElementById('lobo-cycle-day').innerText = pred.tieneDatos ? `Día ${pred.diaActualCiclo}` : 'Sin datos';
+            document.getElementById('lobo-phase-desc').innerText = pred.faseDescLobo;
+            document.getElementById('lobo-next-period').innerText = pred.tieneDatos ? `${formatearFechaCorta(pred.proximoPeriodoISO)} (en ${pred.diasParaProximo}d)` : '--';
+            document.getElementById('lobo-avg-len').innerText = `${pred.promedioCiclo} días`;
+
+            // 3. Síntomas y Antojos de hoy
+            const symDiv = document.getElementById('lobo-symptoms-list');
+            if (regHoy.sintomas && regHoy.sintomas.length > 0) {
+                symDiv.innerHTML = regHoy.sintomas.map(s => `<span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold">${s}</span>`).join('');
+            } else {
+                symDiv.innerHTML = `<span class="text-gray-400 italic">Se siente bien físicamente hoy ✨</span>`;
+            }
+
+            const cravDiv = document.getElementById('lobo-cravings-list');
+            if (regHoy.antojos && regHoy.antojos.length > 0) {
+                cravDiv.innerHTML = regHoy.antojos.map(a => `<span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-700 font-bold">${a}</span>`).join('');
+            } else {
+                cravDiv.innerHTML = `<span class="text-gray-400 italic">Sin antojos específicos por ahora</span>`;
+            }
+
+            // 4. Generar Consejo Inteligente Combinado para el Lobo
+            let consejo = "";
+            if ((regHoy.sintomas || []).includes('Cólicos 😣')) {
+                consejo += "🚨 <b>Alerta de cólicos:</b> Tu Loba tiene dolor hoy. Sorpréndela con algo calientito, un analgésico si suele tomar, o muchos mimos sin que tenga que esforzarse. ";
+            }
+            if (porcentajeEnergia <= 40) {
+                consejo += "🪫 <b>Batería baja (${porcentajeEnergia}%):</b> Hoy tiene poquita energía. Propón planes tranquilos en casa, ayúdala con sus pendientes y déjala descansar. ";
+            } else if (porcentajeEnergia >= 80) {
+                consejo += "⚡ <b>¡Batería a tope!</b> Hoy tu Loba amaneció con mucha energía. Es un gran día para salir a pasear, platicar o tener una cita divertida. ";
+            }
+            if (checkin.animo.includes('Sensible') || checkin.animo.includes('Triste') || checkin.animo.includes('Ansiosa')) {
+                consejo += "🫂 <b>Apoyo emocional:</b> Hoy necesita que su Lobo la escuche sin juzgar, le dé seguridad y le recuerde cuánto la ama. ";
+            }
+            if (regHoy.antojos && regHoy.antojos.length > 0) {
+                consejo += `🎁 <b>Punto extra de Lobo:</b> Tiene antojo de <b>${regHoy.antojos.join(', ')}</b>. ¡Si llegas con eso le vas a alegrar el día!`;
+            }
+            if (!consejo) {
+                consejo = "🐺 Todo marcha increíble hoy con tu Loba. Mándale un mensajito bonito aquí abajo para sacarle una sonrisa.";
+            }
+            document.getElementById('lobo-smart-advice').innerHTML = consejo;
+        }
+
+        window.enviarMensajeBonitoLobo = async function() {
+            const texto = document.getElementById('lobo-custom-msg').value.trim();
+            if (!texto) return alert("Escribe un mensajito primero.");
+            datosPareja.mensajeDelLobo = texto;
+            await guardarEnFirebase();
+            alert("💌 ¡Mensajito enviado! Ya aparece en la pantalla de tu Loba.");
+        };
     </script>
 </body>
 </html>
