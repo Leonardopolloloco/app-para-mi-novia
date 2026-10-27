@@ -107,10 +107,14 @@
             </div>
         </div>
         <button id="btn-reset-session" onclick="cambiarRol()" class="hidden text-xs bg-white/80 hover:bg-white text-gray-600 px-3 py-1.5 rounded-full shadow-sm border border-pink-100 font-semibold transition">
-            Cambiar Rol / Código
+            Cambiar vista
         </button>
     </header>
 
+    <div class="max-w-md mx-auto px-4 mt-2 text-xs text-gray-600 flex gap-3 items-center">
+        <span id="cuenta-actual" class="break-all"></span>
+        <button id="btn-salir" onclick="cerrarSesionGoogle()" class="hidden underline whitespace-nowrap">Cerrar sesión</button>
+    </div>
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-md mx-auto px-4 mt-4">
 
@@ -120,6 +124,11 @@
             <p id="error-text"></p>
         </div>
 
+        <div id="screen-login" class="hidden glass rounded-3xl p-7 text-center shadow-xl mt-6">
+            <h2 class="text-2xl font-bold">Su espacio, con su cuenta</h2>
+            <p class="text-sm text-gray-600 my-4">Entra con Google para recuperar tus registros desde otro dispositivo. Cada uno usa su propia cuenta.</p>
+            <button id="btn-google" onclick="iniciarSesionGoogle()" class="w-full py-3 bg-white border rounded-xl font-bold shadow">Continuar con Google</button>
+        </div>
         <!-- 1. PANTALLA DE CARGA -->
         <div id="screen-loading" class="glass rounded-3xl p-8 text-center shadow-lg mt-10">
             <div class="text-5xl mb-4 animate-bounce">🐺💖</div>
@@ -148,41 +157,19 @@
 
         <!-- 3. PANTALLA VINCULAR CÓDIGO (LOBA O LOBO) -->
         <div id="screen-link" class="hidden glass rounded-3xl p-7 text-center shadow-xl mt-6 fade-in">
-            <div id="link-loba-view" class="hidden">
-                <div class="text-4xl mb-2">🐺🌸</div>
-                <h2 class="text-xl font-bold text-gray-800">Tu Código de Manada</h2>
-                <p class="text-xs text-gray-500 mt-1">Comparte este código con tu Lobo para que sus teléfonos queden conectados:</p>
-                
-                <div class="my-5 p-4 bg-pink-50 border-2 border-dashed border-pink-300 rounded-2xl">
-                    <p id="generated-code" class="text-3xl font-extrabold tracking-widest text-pink-600 select-all">-----</p>
-                </div>
-
-                <button onclick="copiarCodigo()" class="mb-3 w-full py-2.5 rounded-xl bg-pink-100 text-pink-700 font-bold text-sm hover:bg-pink-200 transition">
-                    📋 Copiar Código
-                </button>
-                <button onclick="confirmarEntradaLoba()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold shadow-md">
-                    Entrar a mi Espacio ✨
-                </button>
-
-                <div class="mt-6 pt-4 border-t border-gray-200">
-                    <p class="text-xs text-gray-500 mb-2">¿Ya tenías un código antes en otro celular?</p>
-                    <div class="flex gap-2">
-                        <input id="recover-code-loba" type="text" maxlength="6" placeholder="Tu código anterior" class="flex-1 px-3 py-2 text-sm border rounded-xl uppercase text-center font-bold">
-                        <button onclick="recuperarCodigoLoba()" class="px-4 py-2 bg-gray-800 text-white text-xs font-bold rounded-xl">Recuperar</button>
-                    </div>
-                </div>
-            </div>
+            <div id="link-loba-view" class="hidden"></div>
 
             <div id="link-lobo-view" class="hidden">
+                <p id="estado-vinculo" class="text-sm text-purple-700 mb-3"></p>
                 <div class="text-4xl mb-2">🐺🌙</div>
                 <h2 class="text-xl font-bold text-gray-800">Conectar con mi Loba</h2>
-                <p class="text-xs text-gray-500 mt-1 mb-4">Escribe el código de 5 letras que aparece en el celular de tu Loba:</p>
+                <p class="text-xs text-gray-500 mt-1 mb-4">Pega el código de cuenta que ella te comparte. Después debe aprobar tu solicitud:</p>
 
-                <input id="input-lobo-code" type="text" maxlength="6" placeholder="EJ: LOBA1" 
-                    class="w-full py-3.5 px-4 text-2xl font-extrabold tracking-widest text-center uppercase bg-white border-2 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-600 mb-4">
+                <input id="input-lobo-code" type="text" maxlength="128" placeholder="Código de su cuenta" autocapitalize="off" spellcheck="false" 
+                    class="w-full py-3.5 px-4 text-2xl font-extrabold tracking-widest text-center bg-white border-2 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-600 mb-4">
                 
                 <button onclick="conectarLobo()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold shadow-md">
-                    Sincronizar Ahora 🐾
+                    Solicitar acceso
                 </button>
             </div>
         </div>
@@ -269,6 +256,15 @@
         <!-- ========================================== -->
         <div id="dashboard-loba" class="hidden space-y-4 fade-in">
             
+            <div class="glass rounded-3xl p-5 shadow-lg text-sm space-y-3">
+                <h3 class="font-bold">Acceso de pareja</h3>
+                <p>Comparte este código. Solo una cuenta que tú apruebes podrá ver tus registros, ánimo y notas, y enviarte mensajes.</p>
+                <p id="codigo-propietaria" class="font-mono text-xs break-all p-3 bg-pink-50 rounded-xl select-all"></p>
+                <button onclick="copiarCodigo()" class="px-3 py-2 bg-pink-100 rounded-xl">Copiar código</button>
+                <p id="estado-pareja" class="text-xs"></p>
+                <button id="btn-revocar" onclick="revocarPareja()" class="hidden text-rose-700 underline">Retirar acceso de pareja</button>
+                <div id="solicitudes-pareja" class="space-y-2"></div>
+            </div>
             <!-- BANNER DEL MENSAJITO BONITO SIEMPRE VISIBLE -->
             <div class="glass rounded-3xl p-4 shadow-md border-l-4 border-pink-500 flex items-start gap-3">
                 <div class="text-2xl mt-0.5">💌</div>
@@ -289,7 +285,7 @@
                     <span id="loba-phase-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-pink-100 text-pink-700">
                         🌸 Calculando fase...
                     </span>
-                    <span class="text-xs text-gray-400 font-semibold">Código: <b id="loba-code-pill" class="text-pink-600">---</b></span>
+                    <span class="text-xs text-gray-400 font-semibold">Cuenta: <b id="loba-code-pill" class="text-pink-600">---</b></span>
                 </div>
 
                 <div class="my-3">
@@ -301,15 +297,15 @@
                 <!-- Estadísticas del Algoritmo Predictivo -->
                 <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-pink-100 text-xs">
                     <div class="bg-white/70 p-2 rounded-xl">
-                        <p class="text-gray-400 text-[10px]">Promedio Ciclo</p>
-                        <p id="stat-avg-cycle" class="font-bold text-gray-800 text-sm">28 días</p>
+                        <p class="text-gray-400 text-[10px]">Duración central</p>
+                        <p id="stat-avg-cycle" class="font-bold text-gray-800 text-sm">--</p>
                     </div>
                     <div class="bg-white/70 p-2 rounded-xl">
                         <p class="text-gray-400 text-[10px]">Próx. Periodo</p>
                         <p id="stat-next-period" class="font-bold text-rose-600 text-sm">--</p>
                     </div>
                     <div class="bg-white/70 p-2 rounded-xl">
-                        <p class="text-gray-400 text-[10px]">Ventana Fértil</p>
+                        <p class="text-gray-400 text-[10px]">Rango histórico</p>
                         <p id="stat-fertile" class="font-bold text-purple-600 text-sm">--</p>
                     </div>
                 </div>
@@ -354,9 +350,7 @@
                 <!-- Leyenda -->
                 <div class="flex flex-wrap justify-center gap-3 mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
                     <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Periodo</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-100 border border-dashed border-rose-400 inline-block"></span> Predicción</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-200 inline-block"></span> Fértil</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 inline-block"></span> Ovulación</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-rose-100 border border-dashed border-rose-400 inline-block"></span> Inicio estimado</span>
                 </div>
             </div>
 
@@ -394,10 +388,22 @@
                 </div>
             </div>
 
+            <div class="glass rounded-3xl p-5 shadow-lg space-y-3 text-sm">
+                <h3 class="font-bold">Estimación del próximo periodo</h3>
+                <label class="block">Duración habitual del ciclo, de un inicio al siguiente:
+                    <input id="config-duracion" type="number" min="1" max="365" value="28" class="w-20 p-2 border rounded-xl"> días
+                </label>
+                <p class="text-xs text-gray-500">28 días es una referencia inicial editable. Puedes registrar desde el primer día y cambiarla por tu duración habitual.</p>
+                <label class="flex gap-2"><input id="config-intervalos" type="checkbox">Usar los intervalos del historial para ajustar la estimación (opcional).</label>
+                <p class="text-xs text-gray-500">No se exige un número mínimo de ciclos. Si faltan periodos en el historial, sus intervalos pueden ser mayores que los reales; puedes mantener tu duración habitual.</p>
+                <button onclick="guardarConfiguracionCiclo()" class="px-4 py-2 bg-pink-600 text-white rounded-xl">Guardar configuración</button>
+                <p class="text-xs text-gray-500">El rango histórico no garantiza cuándo llegará el periodo. La app no detecta ovulación y no debe usarse como anticonceptivo. Con anticoncepción hormonal, embarazo, posparto o lactancia, la estimación por calendario puede no corresponder.</p>
+            </div>
+
             <!-- HISTORIAL DE CICLOS (PARA ENTRENAR AL ALGORITMO) -->
             <div class="glass rounded-3xl p-5 shadow-lg">
-                <h3 class="font-bold text-gray-800 text-sm mb-1">🧠 Entrenar Algoritmo de Predicción</h3>
-                <p class="text-xs text-gray-500 mb-3">Agrega las fechas en que iniciaron tus periodos anteriores para que el cálculo promedio sea aún más exacto:</p>
+                <h3 class="font-bold text-gray-800 text-sm mb-1">Historial de inicios</h3>
+                <p class="text-xs text-gray-500 mb-3">Agrega los primeros días de tus periodos anteriores. No registres cada día de sangrado como un nuevo inicio:</p>
                 <div class="flex gap-2 mb-3">
                     <input type="date" id="input-past-cycle" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-xs font-bold">
                     <button onclick="agregarFechaHistorial()" class="px-4 py-2 bg-pink-600 text-white rounded-xl text-xs font-bold shadow-sm">+ Agregar Inicio</button>
@@ -469,7 +475,7 @@
                     </div>
                     <div class="p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
                         <p class="text-gray-400 font-semibold">Duración Promedio</p>
-                        <p id="lobo-avg-len" class="text-sm font-extrabold text-purple-600 mt-1">28 días</p>
+                        <p id="lobo-avg-len" class="text-sm font-extrabold text-purple-600 mt-1">--</p>
                     </div>
                 </div>
             </div>
@@ -511,8 +517,44 @@
     <!-- LOGICA COMPLETA Y FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, collection, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+const DIA_MS = 86400000;
+
+function fechaLocal(fecha = new Date()) {
+  return [fecha.getFullYear(), String(fecha.getMonth() + 1).padStart(2, '0'),
+    String(fecha.getDate()).padStart(2, '0')].join('-');
+}
+
+// Aritmética de fechas civiles con UTC; evita errores por horario de verano.
+function numeroDia(iso) {
+  if (typeof iso !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    throw new TypeError('Se requiere una fecha real YYYY-MM-DD.');
+  }
+  const ms = Date.parse(iso + 'T00:00:00Z');
+  if (!Number.isFinite(ms) || new Date(ms).toISOString().slice(0, 10) !== iso) {
+    throw new RangeError('Fecha inexistente: ' + iso);
+  }
+  return ms / DIA_MS;
+}
+
+function sumarDias(iso, dias) {
+  if (!Number.isInteger(dias)) throw new TypeError('Los días deben ser enteros.');
+  const fecha = new Date((numeroDia(iso) + dias) * DIA_MS);
+  const resultado = fecha.toISOString().slice(0, 10);
+  numeroDia(resultado);
+  return resultado;
+}
+
+function mediana(valores) {
+  if (!valores.length) return null;
+  const ordenados = [...valores].sort((a, b) => a - b);
+  const mitad = Math.floor(ordenados.length / 2);
+  if (ordenados.length % 2) return ordenados[mitad];
+  return (ordenados[mitad - 1] + ordenados[mitad]) / 2;
+}
+
 
         // CREDENCIALES DEL PROYECTO LOBA
         const firebaseConfig = {
@@ -530,12 +572,13 @@
         const db = getFirestore(app);
 
         // ESTADO GLOBAL DE LA APP
-        let rolActual = localStorage.getItem('loba_rol') || null;
-        let codigoActual = localStorage.getItem('loba_codigo') || null;
+        let rolActual = null;
+        let codigoActual = null;
         let unsubscribeSnapshot = null;
 
         // Datos sincronizados en Firebase
         let datosPareja = {
+            configuracionCiclo: {},
             iniciosCiclo: [],       // Array de fechas 'YYYY-MM-DD' donde empezó cada periodo
             diasSangrado: [],       // Array de todos los días 'YYYY-MM-DD' marcados con sangrado
             registrosDiarios: {},   // { 'YYYY-MM-DD': { sintomas: [], antojos: [] } }
@@ -549,7 +592,8 @@
         };
 
         // Variables del Calendario y Check-in
-        const hoyStr = obtenerFechaISO(new Date());
+        let hoyStr = obtenerFechaISO(new Date());
+        window.addEventListener('focus', () => { hoyStr = obtenerFechaISO(new Date()); if (datosListos) { if (rolActual === 'loba') renderizarVistaLoba(); else renderizarVistaLobo(); } });
         let fechaSeleccionada = hoyStr;
         let mesCalendario = new Date().getMonth();
         let anioCalendario = new Date().getFullYear();
@@ -580,295 +624,334 @@
             return `${d} ${meses[m - 1]}`;
         }
 
+        function escaparHTML(valor) {
+            return String(valor).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
         function mostrarErrorFirebase(msg) {
             const box = document.getElementById('error-box');
             const txt = document.getElementById('error-text');
             box.classList.remove('hidden');
-            txt.innerHTML = msg;
+            txt.textContent = msg;
         }
 
-        // 1. INICIALIZAR CONEXIÓN CON FIREBASE
-        signInAnonymously(auth).then(() => {
-            document.getElementById('screen-loading').classList.add('hidden');
-            document.getElementById('sync-badge').innerText = "🟢 Conectado a la nube";
+        let usuarioActual = null;
+        let datosListos = false;
+        let unsubscribeSolicitud = null;
+        let unsubscribeSolicitudes = null;
+        let listaSolicitudes = [];
+        let parejaUID = '';
+        let generacionSesion = 0;
+        const camposLoba = ['iniciosCiclo', 'diasSangrado', 'registrosDiarios', 'checkinHoy', 'configuracionCiclo'];
 
-            if (rolActual && codigoActual) {
-                document.getElementById('btn-reset-session').classList.remove('hidden');
-                iniciarEscuchaTiempoReal(codigoActual);
-                if (rolActual === 'loba') {
-                    mostrarDashboardLoba(true); // Abre el check-in al entrar
-                } else {
-                    mostrarDashboardLobo();
-                }
-            } else {
-                document.getElementById('screen-role').classList.remove('hidden');
+        function datosVacios() {
+            return { iniciosCiclo: [], diasSangrado: [], registrosDiarios: {},
+                configuracionCiclo: { duracionHabitual: 28 },
+                checkinHoy: { fecha: '', animo: '', energia: 0, nota: '' }, mensajeDelLobo: '' };
+        }
+        function detenerEscuchas() {
+            for (const f of [unsubscribeSnapshot, unsubscribeSolicitud, unsubscribeSolicitudes]) if (f) f();
+            unsubscribeSnapshot = unsubscribeSolicitud = unsubscribeSolicitudes = null;
+            datosListos = false;
+        }
+        function ocultarPantallas() {
+            for (const id of ['screen-loading','screen-login','screen-role','screen-link','dashboard-loba','dashboard-lobo','modal-checkin']) {
+                document.getElementById(id).classList.add('hidden');
             }
-        }).catch((err) => {
-            document.getElementById('screen-loading').classList.add('hidden');
-            mostrarErrorFirebase(`No se pudo autenticar (${err.code}). Verifica que "Anónimo" esté habilitado en Authentication y que tu dominio github.io esté en Authorized Domains.`);
-        });
-
-        // 2. FLUJO DE SELECCIÓN DE ROL Y VINCULACIÓN
-        window.seleccionarRol = async function(rol) {
-            rolActual = rol;
-            document.getElementById('screen-role').classList.add('hidden');
-            document.getElementById('screen-link').classList.remove('hidden');
-            document.getElementById('btn-reset-session').classList.remove('hidden');
-
-            if (rol === 'loba') {
-                document.getElementById('link-loba-view').classList.remove('hidden');
-                document.getElementById('link-lobo-view').classList.add('hidden');
-
-                // Generar código de 5 caracteres claros
-                if (!codigoActual) {
-                    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-                    let generado = "";
-                    for (let i = 0; i < 5; i++) {
-                        generado += chars.charAt(Math.floor(Math.random() * chars.length));
-                    }
-                    codigoActual = generado;
-                }
-                document.getElementById('generated-code').innerText = codigoActual;
-
-                // Guardar inmediatamente la sala en Firestore
-                try {
-                    await setDoc(doc(db, "parejas", codigoActual), {
-                        creado: hoyStr,
-                        iniciosCiclo: [],
-                        diasSangrado: [],
-                        registrosDiarios: {},
-                        checkinHoy: { fecha: hoyStr, animo: 'Feliz ✨', energia: 4, nota: '' },
-                        mensajeDelLobo: ''
-                    }, { merge: true });
-                    localStorage.setItem('loba_rol', 'loba');
-                    localStorage.setItem('loba_codigo', codigoActual);
-                } catch (e) {
-                    mostrarErrorFirebase(`Error al guardar el código en la base de datos (${e.code}). <b>Solución:</b> Entra a Firebase -> Firestore Database -> Crear base de datos (en Modo de Prueba) o verifica en la pestaña "Reglas" que diga <code>allow read, write: if true;</code>.`);
-                }
-            } else {
-                document.getElementById('link-lobo-view').classList.remove('hidden');
-                document.getElementById('link-loba-view').classList.add('hidden');
-            }
-        };
-
-        window.copiarCodigo = function() {
-            navigator.clipboard.writeText(codigoActual);
-            alert(`¡Código ${codigoActual} copiado! Mándaselo a tu Lobo 🐺`);
-        };
-
-        window.confirmarEntradaLoba = function() {
-            document.getElementById('screen-link').classList.add('hidden');
-            iniciarEscuchaTiempoReal(codigoActual);
-            mostrarDashboardLoba(true);
-        };
-
-        window.recuperarCodigoLoba = function() {
-            const code = document.getElementById('recover-code-loba').value.trim().toUpperCase();
-            if (code.length < 4) return alert("Escribe un código válido.");
-            codigoActual = code;
-            localStorage.setItem('loba_rol', 'loba');
-            localStorage.setItem('loba_codigo', codigoActual);
-            confirmarEntradaLoba();
-        };
-
-        window.conectarLobo = async function() {
-            const code = document.getElementById('input-lobo-code').value.trim().toUpperCase();
-            if (code.length < 4) return alert("Por favor ingresa el código completo de tu Loba.");
-
+        }
+        function ocultarError() { document.getElementById('error-box').classList.add('hidden'); }
+        function refPareja(codigo = codigoActual) { return doc(db, 'parejas_v2', codigo); }
+        function comprobarUsuario() {
+            if (!usuarioActual || usuarioActual.isAnonymous) throw new Error('Inicia sesión con Google.');
+        }
+        async function guardarPerfil() {
+            comprobarUsuario();
+            await setDoc(doc(db, 'usuarios_v2', usuarioActual.uid), { rol: rolActual, sala: codigoActual || '' });
+        }
+        window.iniciarSesionGoogle = async function() {
+            ocultarError();
+            const btn = document.getElementById('btn-google');
+            btn.disabled = true;
             try {
-                const docRef = doc(db, "parejas", code);
-                const snap = await getDoc(docRef);
-                if (!snap.exists()) {
-                    // Si aún no existía, lo inicializamos para que conecten sin bloqueo
-                    await setDoc(docRef, {
-                        creado: hoyStr,
-                        iniciosCiclo: [],
-                        diasSangrado: [],
-                        registrosDiarios: {},
-                        checkinHoy: { fecha: hoyStr, animo: 'Feliz ✨', energia: 4, nota: '' }
-                    }, { merge: true });
-                }
-                codigoActual = code;
-                localStorage.setItem('loba_rol', 'lobo');
-                localStorage.setItem('loba_codigo', codigoActual);
-                document.getElementById('screen-link').classList.add('hidden');
-                iniciarEscuchaTiempoReal(codigoActual);
-                mostrarDashboardLobo();
+                const proveedor = new GoogleAuthProvider();
+                proveedor.setCustomParameters({ prompt: 'select_account' });
+                await signInWithPopup(auth, proveedor);
             } catch (e) {
-                mostrarErrorFirebase(`No se pudo leer la base de datos (${e.code}). Asegúrate de haber creado Firestore Database en Modo de Prueba dentro de Firebase.`);
+                mostrarErrorFirebase('No se pudo entrar con Google (' + (e.code || e.message) + '). Si se bloqueó la ventana, permite ventanas emergentes y vuelve a pulsar el botón.');
+            } finally { btn.disabled = false; }
+        };
+        window.cerrarSesionGoogle = async function() {
+            detenerEscuchas();
+            await signOut(auth);
+        };
+        setPersistence(auth, browserLocalPersistence).then(() => {
+            onAuthStateChanged(auth, async (usuario) => {
+                const generacion = ++generacionSesion;
+                detenerEscuchas(); ocultarPantallas(); ocultarError();
+                usuarioActual = usuario && !usuario.isAnonymous ? usuario : null;
+                rolActual = null; codigoActual = null; datosPareja = datosVacios();
+                document.getElementById('btn-salir').classList.toggle('hidden', !usuarioActual);
+                document.getElementById('btn-reset-session').classList.toggle('hidden', !usuarioActual);
+                document.getElementById('cuenta-actual').innerText = usuarioActual?.email || '';
+                if (!usuarioActual) {
+                    document.getElementById('sync-badge').innerText = 'Inicia sesión para abrir tu espacio';
+                    document.getElementById('screen-login').classList.remove('hidden');
+                    return;
+                }
+                document.getElementById('sync-badge').innerText = 'Sesión de Google iniciada';
+                document.getElementById('screen-loading').classList.remove('hidden');
+                try {
+                    const perfil = await getDoc(doc(db, 'usuarios_v2', usuarioActual.uid));
+                    if (generacion !== generacionSesion) return;
+                    if (perfil.exists() && ['loba','lobo'].includes(perfil.data().rol)) {
+                        rolActual = perfil.data().rol;
+                        codigoActual = perfil.data().sala || null;
+                        if (rolActual === 'loba') await abrirEspacioPropio();
+                        else if (codigoActual) esperarAprobacion();
+                        else await window.seleccionarRol('lobo');
+                    } else {
+                        ocultarPantallas(); document.getElementById('screen-role').classList.remove('hidden');
+                    }
+                } catch (e) {
+                    ocultarPantallas(); document.getElementById('screen-role').classList.remove('hidden');
+                    mostrarErrorFirebase('No se pudo abrir el perfil (' + (e.code || e.message) + '). Publica primero las reglas incluidas en el paquete.');
+                }
+            });
+        }).catch(e => mostrarErrorFirebase('No se pudo conservar la sesión: ' + (e.code || e.message)));
+
+        async function abrirEspacioPropio() {
+            comprobarUsuario();
+            codigoActual = usuarioActual.uid; rolActual = 'loba';
+            await runTransaction(db, async tx => {
+                const ref = refPareja();
+                const existente = await tx.get(ref);
+                if (!existente.exists()) tx.set(ref, {
+                    ...datosVacios(), ownerUid: usuarioActual.uid, partnerUid: '', creado: fechaLocal()
+                });
+            });
+            await guardarPerfil();
+            iniciarEscuchaTiempoReal(codigoActual);
+            escucharSolicitudes();
+        }
+        window.seleccionarRol = async function(rol) {
+            comprobarUsuario(); ocultarError();
+            if (!['loba','lobo'].includes(rol)) return;
+            detenerEscuchas(); rolActual = rol;
+            ocultarPantallas();
+            if (rol === 'loba') {
+                document.getElementById('screen-loading').classList.remove('hidden');
+                await abrirEspacioPropio();
+            } else {
+                codigoActual = null;
+                document.getElementById('screen-link').classList.remove('hidden');
+                document.getElementById('link-loba-view').classList.add('hidden');
+                document.getElementById('link-lobo-view').classList.remove('hidden');
+                document.getElementById('estado-vinculo').innerText = '';
             }
         };
-
         window.cambiarRol = function() {
-            if (unsubscribeSnapshot) unsubscribeSnapshot();
-            localStorage.removeItem('loba_rol');
-            localStorage.removeItem('loba_codigo');
-            rolActual = null;
-            codigoActual = null;
-            location.reload();
+            detenerEscuchas(); ocultarPantallas();
+            document.getElementById('screen-role').classList.remove('hidden');
         };
-
-        // 3. SINCRONIZACIÓN EN TIEMPO REAL
-        function iniciarEscuchaTiempoReal(codigo) {
-            if (unsubscribeSnapshot) unsubscribeSnapshot();
-            unsubscribeSnapshot = onSnapshot(doc(db, "parejas", codigo), (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.data();
-                    datosPareja = {
-                        iniciosCiclo: data.iniciosCiclo || [],
-                        diasSangrado: data.diasSangrado || [],
-                        registrosDiarios: data.registrosDiarios || {},
-                        checkinHoy: data.checkinHoy || { fecha: hoyStr, animo: 'Feliz ✨', energia: 4, nota: '' },
-                        mensajeDelLobo: data.mensajeDelLobo || ''
-                    };
-                    if (rolActual === 'loba') {
-                        renderizarVistaLoba();
-                    } else if (rolActual === 'lobo') {
-                        renderizarVistaLobo();
-                    }
+        window.copiarCodigo = async function() {
+            comprobarUsuario();
+            await navigator.clipboard.writeText(usuarioActual.uid);
+            alert('Código copiado. Tu pareja deberá iniciar sesión con su propia cuenta y solicitar acceso.');
+        };
+        window.confirmarEntradaLoba = abrirEspacioPropio;
+        window.recuperarCodigoLoba = function() {
+            alert('Tu espacio se recupera al entrar con la misma cuenta de Google. Los códigos anteriores pertenecen al prototipo.');
+        };
+        window.conectarLobo = async function() {
+            comprobarUsuario(); ocultarError();
+            const code = document.getElementById('input-lobo-code').value.trim();
+            if (!/^[A-Za-z0-9_-]{1,128}$/.test(code) || code === usuarioActual.uid) {
+                return alert('Pega el código completo de la cuenta de tu pareja, respetando mayúsculas y minúsculas.');
+            }
+            codigoActual = code; rolActual = 'lobo';
+            const solicitud = doc(db, 'parejas_v2', code, 'solicitudes', usuarioActual.uid);
+            const anterior = await getDoc(solicitud);
+            if (!anterior.exists()) {
+                await setDoc(solicitud, { estado: 'pendiente', email: usuarioActual.email,
+                    nombre: (usuarioActual.displayName || 'Pareja').slice(0,100) });
+            } else if (anterior.data().estado !== 'aceptada') {
+                await updateDoc(solicitud, { estado: 'pendiente', email: usuarioActual.email,
+                    nombre: (usuarioActual.displayName || 'Pareja').slice(0,100) });
+            }
+            await guardarPerfil();
+            esperarAprobacion();
+        };
+        function esperarAprobacion() {
+            if (unsubscribeSolicitud) unsubscribeSolicitud();
+            ocultarPantallas();
+            document.getElementById('screen-link').classList.remove('hidden');
+            document.getElementById('link-loba-view').classList.add('hidden');
+            document.getElementById('link-lobo-view').classList.remove('hidden');
+            document.getElementById('input-lobo-code').value = codigoActual;
+            document.getElementById('estado-vinculo').innerText = 'Esperando a que ella apruebe tu cuenta desde su espacio.';
+            const codigo = codigoActual;
+            unsubscribeSolicitud = onSnapshot(doc(db, 'parejas_v2', codigo, 'solicitudes', usuarioActual.uid), snap => {
+                if (snap.exists() && snap.data().estado === 'aceptada') {
+                    if (!unsubscribeSnapshot) iniciarEscuchaTiempoReal(codigo);
+                } else {
+                    if (unsubscribeSnapshot) unsubscribeSnapshot();
+                    unsubscribeSnapshot = null; datosListos = false;
+                    datosPareja = datosVacios();
+                    ocultarPantallas(); document.getElementById('screen-link').classList.remove('hidden');
+                    document.getElementById('estado-vinculo').innerText = snap.exists() && snap.data().estado !== 'pendiente'
+                        ? 'El acceso no está activo. Puedes enviar una nueva solicitud.'
+                        : 'Solicitud pendiente. Ella debe aprobarla desde su cuenta.';
                 }
-            }, (error) => {
-                mostrarErrorFirebase(`Error de sincronización en vivo (${error.code}). Revisa las Reglas de Firestore Database.`);
+            }, error => mostrarErrorFirebase('No se pudo revisar la solicitud: ' + error.code));
+        }
+        function escucharSolicitudes() {
+            if (unsubscribeSolicitudes) unsubscribeSolicitudes();
+            unsubscribeSolicitudes = onSnapshot(collection(db, 'parejas_v2', usuarioActual.uid, 'solicitudes'), snap => {
+                listaSolicitudes = snap.docs.map(d => ({ ...d.data(), uid: d.id }));
+                renderizarSolicitudes();
+            }, error => mostrarErrorFirebase('No se pudieron leer las solicitudes: ' + error.code));
+        }
+        function renderizarSolicitudes() {
+            const contenedor = document.getElementById('solicitudes-pareja');
+            contenedor.replaceChildren();
+            for (const solicitud of listaSolicitudes.filter(s => s.estado === 'pendiente')) {
+                const fila = document.createElement('div'); fila.className = 'p-3 bg-pink-50 rounded-xl space-y-2';
+                const texto = document.createElement('p'); texto.textContent = solicitud.nombre + ' — ' + solicitud.email;
+                fila.append(texto);
+                for (const [etiqueta, aceptar] of [['Aceptar',true],['Rechazar',false]]) {
+                    const boton = document.createElement('button'); boton.textContent = etiqueta;
+                    boton.className = 'mr-3 px-3 py-2 bg-white border rounded-xl';
+                    boton.onclick = () => responderSolicitud(solicitud.uid, aceptar).catch(e => mostrarErrorFirebase(e.message));
+                    fila.append(boton);
+                }
+                contenedor.append(fila);
+            }
+            if (!contenedor.childNodes.length) contenedor.textContent = 'Sin solicitudes pendientes.';
+            document.getElementById('btn-revocar').classList.toggle('hidden', !parejaUID);
+            document.getElementById('estado-pareja').innerText = parejaUID ? 'Una cuenta de pareja tiene acceso.' : 'Todavía no hay una pareja autorizada.';
+        }
+        async function responderSolicitud(uid, aceptar) {
+            comprobarUsuario();
+            if (rolActual !== 'loba') return;
+            await runTransaction(db, async tx => {
+                const ref = refPareja(usuarioActual.uid);
+                const snap = await tx.get(ref);
+                if (aceptar && snap.data().partnerUid && snap.data().partnerUid !== uid) {
+                    throw new Error('Primero retira el acceso de la pareja actual.');
+                }
+                tx.update(doc(db, 'parejas_v2', usuarioActual.uid, 'solicitudes', uid), { estado: aceptar ? 'aceptada' : 'rechazada' });
+                if (aceptar) tx.update(ref, { partnerUid: uid });
             });
         }
-
-        async function guardarEnFirebase() {
-            if (!codigoActual) return;
-            try {
-                await setDoc(doc(db, "parejas", codigoActual), datosPareja, { merge: true });
-            } catch (e) {
-                mostrarErrorFirebase(`No se pudieron guardar los cambios (${e.code}).`);
-            }
+        window.revocarPareja = async function() {
+            comprobarUsuario();
+            if (rolActual !== 'loba' || !parejaUID) return;
+            const anterior = parejaUID;
+            await runTransaction(db, async tx => {
+                const ref = refPareja(usuarioActual.uid);
+                const snap = await tx.get(ref);
+                if (snap.data().partnerUid !== anterior) throw new Error('El vínculo cambió. Vuelve a intentarlo.');
+                tx.update(ref, { partnerUid: '' });
+                tx.update(doc(db, 'parejas_v2', usuarioActual.uid, 'solicitudes', anterior), { estado: 'revocada' });
+            });
+        };
+        function iniciarEscuchaTiempoReal(codigo) {
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+            let abierta = false;
+            unsubscribeSnapshot = onSnapshot(refPareja(codigo), snap => {
+                if (!snap.exists()) { mostrarErrorFirebase('No existe este espacio.'); return; }
+                const data = snap.data();
+                datosPareja = datosVacios();
+                for (const campo of [...camposLoba, 'mensajeDelLobo']) {
+                    if (data[campo] !== undefined) datosPareja[campo] = data[campo];
+                }
+                datosListos = true; parejaUID = data.partnerUid || '';
+                document.getElementById('sync-badge').innerText = 'Datos sincronizados con tu cuenta';
+                if (!abierta) {
+                    ocultarPantallas(); abierta = true;
+                    if (rolActual === 'loba') mostrarDashboardLoba(false);
+                    else mostrarDashboardLobo();
+                } else if (rolActual === 'loba') renderizarVistaLoba();
+                else renderizarVistaLobo();
+                if (rolActual === 'loba') {
+                    document.getElementById('codigo-propietaria').textContent = usuarioActual.uid;
+                    renderizarSolicitudes();
+                }
+            }, error => {
+                datosListos = false;
+                if (unsubscribeSnapshot) unsubscribeSnapshot();
+                unsubscribeSnapshot = null;
+                datosPareja = datosVacios();
+                ocultarPantallas(); document.getElementById('screen-role').classList.remove('hidden');
+                mostrarErrorFirebase('No se pudo acceder al espacio (' + error.code + '). Revisa la aprobación de pareja y las reglas de Firestore.');
+            });
         }
+        async function guardarEnFirebase() {
+            comprobarUsuario();
+            if (!codigoActual || !datosListos) throw new Error('Espera a que se carguen los datos antes de guardar.');
+            const cambios = rolActual === 'loba'
+                ? Object.fromEntries(camposLoba.map(campo => [campo, datosPareja[campo]]))
+                : { mensajeDelLobo: datosPareja.mensajeDelLobo };
+            await updateDoc(refPareja(), cambios);
+        }
+        window.addEventListener('unhandledrejection', event => {
+            event.preventDefault();
+            mostrarErrorFirebase('No se completó la operación: ' + (event.reason?.code || event.reason?.message || 'error desconocido'));
+        });
 
         // =========================================================================
         // 4. ALGORITMO PREDICTIVO DEL CICLO (MEDIA MÓVIL PONDERADA)
         // =========================================================================
         function calcularPrediccionCiclo() {
-            // Ordenar fechas de inicio de menor a mayor
-            const inicios = [...new Set(datosPareja.iniciosCiclo)].sort();
-            
-            if (inicios.length === 0) {
-                return {
-                    tieneDatos: false,
-                    promedioCiclo: 28,
-                    diaActualCiclo: null,
-                    faseNombre: 'Sin registros aún',
-                    faseDescLobo: 'En cuanto tu Loba marque el primer día de su periodo en el calendario, calcularé sus fases hormonales y predicciones.',
-                    proximoPeriodoISO: null,
-                    diasParaProximo: null,
-                    ventanaFertilInicioISO: null,
-                    ovulacionISO: null,
-                    prediccionesFuturasSet: new Set(),
-                    fertilSet: new Set(),
-                    ovulacionSet: new Set()
-                };
-            }
-
-            // 1. Calcular intervalos reales entre cada inicio de periodo
-            let intervalos = [];
-            for (let i = 1; i < inicios.length; i++) {
-                const d1 = new Date(inicios[i - 1] + 'T00:00:00');
-                const d2 = new Date(inicios[i] + 'T00:00:00');
-                const diffDias = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
-                // Filtramos ciclos atípicos (menores a 18 o mayores a 50 días por olvido de registro)
-                if (diffDias >= 18 && diffDias <= 50) {
-                    intervalos.push(diffDias);
-                }
-            }
-
-            // 2. Calcular Promedio Móvil Ponderado (los últimos ciclos pesan más)
-            let promedioCiclo = 28;
-            if (intervalos.length > 0) {
-                const ultimos = intervalos.slice(-6); // Tomamos hasta los últimos 6 ciclos
-                let sumaPonderada = 0;
-                let sumaPesos = 0;
-                ultimos.forEach((duracion, idx) => {
-                    const peso = idx + 1; // El más reciente tiene mayor peso
-                    sumaPonderada += duracion * peso;
-                    sumaPesos += peso;
-                });
-                promedioCiclo = Math.round(sumaPonderada / sumaPesos);
-            }
-
-            // 3. Calcular día actual del ciclo respecto al último periodo registrado
-            const ultimoInicioStr = inicios[inicios.length - 1];
-            const ultimoInicioDate = new Date(ultimoInicioStr + 'T00:00:00');
-            const hoyDate = new Date(hoyStr + 'T00:00:00');
-            const diaActualCiclo = Math.floor((hoyDate - ultimoInicioDate) / (1000 * 60 * 60 * 24)) + 1;
-
-            // 4. Proyectar los próximos 3 ciclos completos para pintar en el calendario
-            const prediccionesFuturasSet = new Set();
-            const fertilSet = new Set();
-            const ovulacionSet = new Set();
-
-            let proximoPeriodoISO = null;
-            let ovulacionActualISO = null;
-
-            for (let c = 1; c <= 3; c++) {
-                const inicioProyectado = new Date(ultimoInicioDate);
-                inicioProyectado.setDate(inicioProyectado.getDate() + (promedioCiclo * c));
-                const isoInicio = obtenerFechaISO(inicioProyectado);
-                if (c === 1) proximoPeriodoISO = isoInicio;
-
-                // 5 días estimados de sangrado por ciclo proyectado
-                for (let d = 0; d < 5; d++) {
-                    const diaSangrado = new Date(inicioProyectado);
-                    diaSangrado.setDate(diaSangrado.getDate() + d);
-                    prediccionesFuturasSet.add(obtenerFechaISO(diaSangrado));
-                }
-
-                // La ovulación ocurre aprox 14 días ANTES del inicio del siguiente periodo
-                const fechaOvulacion = new Date(inicioProyectado);
-                fechaOvulacion.setDate(fechaOvulacion.getDate() - 14);
-                const isoOv = obtenerFechaISO(fechaOvulacion);
-                ovulacionSet.add(isoOv);
-                if (c === 1) ovulacionActualISO = isoOv;
-
-                // Ventana fértil: 4 días antes de ovulación + día de ovulación + 1 día después
-                for (let f = -4; f <= 1; f++) {
-                    const diaFertil = new Date(fechaOvulacion);
-                    diaFertil.setDate(diaFertil.getDate() + f);
-                    fertilSet.add(obtenerFechaISO(diaFertil));
-                }
-            }
-
-            const proximoDate = new Date(proximoPeriodoISO + 'T00:00:00');
-            const diasParaProximo = Math.round((proximoDate - hoyDate) / (1000 * 60 * 60 * 24));
-
-            // 5. Determinar Fase Hormonal Actual
-            const diaOvulacionEstimado = promedioCiclo - 14;
-            let faseNombre = "";
-            let faseDescLobo = "";
-
-            if (datosPareja.diasSangrado.includes(hoyStr) || (diaActualCiclo >= 1 && diaActualCiclo <= 5)) {
-                faseNombre = "🩸 Fase Menstrual";
-                faseDescLobo = "Sus hormonas están en su punto más bajo. Es normal que sienta cansancio físico o cólicos. Prioriza su comodidad, calorcito y cero estrés.";
-            } else if (diaActualCiclo < diaOvulacionEstimado - 3) {
-                faseNombre = "🌱 Fase Folicular";
-                faseDescLobo = "Su estrógeno está subiendo. Notarás que tiene más energía, buen humor y ganas de hacer planes juntos.";
-            } else if (diaActualCiclo >= diaOvulacionEstimado - 3 && diaActualCiclo <= diaOvulacionEstimado + 1) {
-                faseNombre = "✨ Fase de Ovulación";
-                faseDescLobo = "Pico de energía y confianza. Es cuando se siente más radiante y cariñosa. ¡Invítala a salir o hazle muchos cumplidos!";
-            } else {
-                faseNombre = "🌙 Fase Lútea (Pre-menstrual)";
-                faseDescLobo = "Sube la progesterona y luego baja antes del periodo. Puede tener menos batería, antojos o estar más sensible. ¡Modo Lobo protector al 100%!";
-            }
-
-            return {
-                tieneDatos: true,
-                promedioCiclo,
-                diaActualCiclo,
-                faseNombre,
-                faseDescLobo,
-                proximoPeriodoISO,
-                diasParaProximo,
-                ovulacionISO: ovulacionActualISO,
-                prediccionesFuturasSet,
-                fertilSet,
-                ovulacionSet
+            const base = {
+                tieneDatos: false, tieneEstimacion: false, promedioCiclo: null,
+                diaActualCiclo: null, faseNombre: 'Seguimiento del ciclo',
+                faseDescLobo: '', estadoTexto: 'Registra el primer día de un periodo.',
+                proximoPeriodoISO: null, diasParaProximo: null, rangoTexto: '--', ovulacionISO: null,
+                prediccionesFuturasSet: new Set(), fertilSet: new Set(), ovulacionSet: new Set()
             };
+            try {
+                const inicios = [...new Set(datosPareja.iniciosCiclo)].sort();
+                const hoy = fechaLocal();
+                for (const fecha of inicios) {
+                    numeroDia(fecha);
+                    if (fecha > hoy) throw new Error('Hay un inicio futuro en el historial. Corrígelo.');
+                }
+                if (!inicios.length) return { ...base, faseDescLobo: base.estadoTexto };
+                const habitual = Number(datosPareja.configuracionCiclo?.duracionHabitual ?? 28);
+                if (!Number.isInteger(habitual) || habitual < 1 || habitual > 365) throw new Error('Revisa la duración habitual configurada.');
+                const intervalos = [];
+                for (let i = 1; i < inicios.length; i++) intervalos.push(numeroDia(inicios[i]) - numeroDia(inicios[i-1]));
+                const usarHistorial = datosPareja.configuracionCiclo?.usarIntervalos === true && intervalos.length > 0;
+                const usados = intervalos.slice(-12);
+                const duracion = usarHistorial ? Math.round(mediana(usados)) : habitual;
+                const ultimo = inicios.at(-1);
+                const proximo = sumarDias(ultimo, duracion);
+                let texto = usarHistorial
+                    ? 'Estimación basada en los intervalos registrados; si faltan periodos puede desviarse.'
+                    : 'Referencia inicial basada en la duración habitual indicada: ' + habitual + ' días.';
+                if (hoy > proximo) texto += ' La fecha estimada pasó y aún no se registró otro inicio.';
+                let rango = '--';
+                if (usarHistorial) rango = formatearFechaCorta(sumarDias(ultimo, Math.min(...usados))) + ' – ' + formatearFechaCorta(sumarDias(ultimo, Math.max(...usados)));
+                return { ...base, tieneDatos: true, tieneEstimacion: true, promedioCiclo: duracion,
+                    diaActualCiclo: numeroDia(hoy) - numeroDia(ultimo) + 1,
+                    faseNombre: datosPareja.diasSangrado.includes(hoy) ? 'Sangrado registrado hoy' : 'Seguimiento del ciclo',
+                    estadoTexto: texto, faseDescLobo: texto, proximoPeriodoISO: proximo,
+                    diasParaProximo: numeroDia(proximo) - numeroDia(hoy), rangoTexto: rango,
+                    prediccionesFuturasSet: new Set([proximo]) };
+            } catch (e) {
+                return { ...base, faseNombre: 'Revisa los registros', estadoTexto: e.message, faseDescLobo: e.message };
+            }
         }
+
+        window.guardarConfiguracionCiclo = async function() {
+            const duracion = Number(document.getElementById('config-duracion').value);
+            if (!Number.isInteger(duracion) || duracion < 1 || duracion > 365) return alert('Escribe una duración entera entre 1 y 365 días. Este es un límite de entrada, no un rango de normalidad.');
+            datosPareja.configuracionCiclo = { duracionHabitual: duracion,
+                usarIntervalos: document.getElementById('config-intervalos').checked };
+            await guardarEnFirebase();
+            renderizarVistaLoba();
+        };
 
         // =========================================================================
         // 5. FUNCIONES DEL CHECK-IN DIARIO Y MENSAJITO BONITO (LOBA)
@@ -929,10 +1012,9 @@
                 : msgBase;
 
             document.getElementById('sweet-message-text').innerText = msgFinal;
+            await guardarEnFirebase();
             document.getElementById('checkin-form-step').classList.add('hidden');
             document.getElementById('checkin-message-step').classList.remove('hidden');
-
-            await guardarEnFirebase();
             renderizarVistaLoba();
         };
 
@@ -942,7 +1024,7 @@
         function mostrarDashboardLoba(abrirCheckinAlIniciar) {
             document.getElementById('dashboard-loba').classList.remove('hidden');
             document.getElementById('dashboard-lobo').classList.add('hidden');
-            document.getElementById('loba-code-pill').innerText = codigoActual;
+            document.getElementById('loba-code-pill').innerText = usuarioActual?.displayName || 'Mi cuenta';
             renderizarVistaLoba();
             if (abrirCheckinAlIniciar) {
                 abrirModalCheckin();
@@ -962,22 +1044,14 @@
             document.getElementById('loba-current-mood').innerText = datosPareja.checkinHoy?.animo || 'Feliz ✨';
             document.getElementById('loba-current-energy').innerText = `${(datosPareja.checkinHoy?.energia || 4) * 20}%`;
 
-            // Actualizar cabecera de ciclo
+            document.getElementById('config-duracion').value = datosPareja.configuracionCiclo?.duracionHabitual ?? 28;
+            document.getElementById('config-intervalos').checked = datosPareja.configuracionCiclo?.usarIntervalos === true;
             document.getElementById('loba-phase-badge').innerText = pred.faseNombre;
-            document.getElementById('stat-avg-cycle').innerText = `${pred.promedioCiclo} días`;
-
-            if (pred.tieneDatos) {
-                document.getElementById('loba-cycle-title').innerText = `Día ${pred.diaActualCiclo} del ciclo`;
-                if (pred.diasParaProximo > 0) {
-                    document.getElementById('loba-cycle-subtitle').innerText = `Próximo periodo estimado en ${pred.diasParaProximo} días`;
-                } else if (pred.diasParaProximo === 0) {
-                    document.getElementById('loba-cycle-subtitle').innerText = `Tu periodo está pronosticado para hoy`;
-                } else {
-                    document.getElementById('loba-cycle-subtitle').innerText = `Retraso de ${Math.abs(pred.diasParaProximo)} días respecto al promedio`;
-                }
-                document.getElementById('stat-next-period').innerText = formatearFechaCorta(pred.proximoPeriodoISO);
-                document.getElementById('stat-fertile').innerText = formatearFechaCorta(pred.ovulacionISO);
-            }
+            document.getElementById('stat-avg-cycle').innerText = pred.promedioCiclo == null ? '--' : `${pred.promedioCiclo} días`;
+            document.getElementById('loba-cycle-title').innerText = pred.tieneDatos ? `Día ${pred.diaActualCiclo} desde el último inicio` : 'Sin registros';
+            document.getElementById('loba-cycle-subtitle').innerText = pred.estadoTexto;
+            document.getElementById('stat-next-period').innerText = formatearFechaCorta(pred.proximoPeriodoISO);
+            document.getElementById('stat-fertile').innerText = pred.rangoTexto;
 
             renderizarCalendario(pred);
             renderizarChipsDiaSeleccionado();
@@ -1048,33 +1122,18 @@
             if (!datosPareja.iniciosCiclo.includes(hoyStr)) {
                 datosPareja.iniciosCiclo.push(hoyStr);
             }
-            // Marcar hoy y los siguientes 4 días como sangrado inicial editable
-            const baseDate = new Date(hoyStr + 'T00:00:00');
-            for (let i = 0; i < 5; i++) {
-                const d = new Date(baseDate);
-                d.setDate(d.getDate() + i);
-                const iso = obtenerFechaISO(d);
-                if (!datosPareja.diasSangrado.includes(iso)) {
-                    datosPareja.diasSangrado.push(iso);
-                }
-            }
+            if (!datosPareja.diasSangrado.includes(hoyStr)) datosPareja.diasSangrado.push(hoyStr);
             await guardarEnFirebase();
         };
 
         window.togglePeriodoEnFechaSeleccionada = async function() {
+            if (fechaSeleccionada > fechaLocal()) return alert('No puedes registrar sangrado observado en una fecha futura.');
             const idx = datosPareja.diasSangrado.indexOf(fechaSeleccionada);
             if (idx > -1) {
                 datosPareja.diasSangrado.splice(idx, 1);
                 datosPareja.iniciosCiclo = datosPareja.iniciosCiclo.filter(f => f !== fechaSeleccionada);
             } else {
                 datosPareja.diasSangrado.push(fechaSeleccionada);
-                // Si el día anterior no tenía sangrado, también lo registramos como inicio de ciclo
-                const dAnt = new Date(fechaSeleccionada + 'T00:00:00');
-                dAnt.setDate(dAnt.getDate() - 1);
-                const isoAnt = obtenerFechaISO(dAnt);
-                if (!datosPareja.diasSangrado.includes(isoAnt) && !datosPareja.iniciosCiclo.includes(fechaSeleccionada)) {
-                    datosPareja.iniciosCiclo.push(fechaSeleccionada);
-                }
             }
             await guardarEnFirebase();
         };
@@ -1121,6 +1180,7 @@
         window.agregarFechaHistorial = async function() {
             const val = document.getElementById('input-past-cycle').value;
             if (!val) return;
+            if (val > fechaLocal()) return alert('Un inicio registrado no puede ser futuro.');
             if (!datosPareja.iniciosCiclo.includes(val)) {
                 datosPareja.iniciosCiclo.push(val);
             }
@@ -1138,7 +1198,7 @@
 
         function renderizarHistorialCiclos() {
             const cont = document.getElementById('cycle-history-list');
-            const ordenados = [...new Set(datosPareja.iniciosCiclo)].sort().reverse();
+            const ordenados = [...new Set(datosPareja.iniciosCiclo)].filter(f => { try { numeroDia(f); return true; } catch { return false; } }).sort().reverse();
             if (ordenados.length === 0) {
                 cont.innerHTML = `<span class="text-xs text-gray-400 italic">Aún no hay inicios registrados.</span>`;
                 return;
@@ -1162,13 +1222,13 @@
 
         function renderizarVistaLobo() {
             const pred = calcularPrediccionCiclo();
-            const checkin = datosPareja.checkinHoy || { animo: 'Feliz ✨', energia: 4, nota: '' };
+            const checkin = datosPareja.checkinHoy?.fecha === fechaLocal() ? datosPareja.checkinHoy : { animo: 'Sin reporte de hoy', energia: 0, nota: '' };
             const regHoy = datosPareja.registrosDiarios[hoyStr] || { sintomas: [], antojos: [] };
 
             // 1. Ánimo y Batería de Energía
             document.getElementById('lobo-view-mood').innerText = checkin.animo || 'Sin reporte';
-            const porcentajeEnergia = (checkin.energia || 4) * 20;
-            document.getElementById('lobo-view-energy').innerText = `${porcentajeEnergia}%`;
+            const porcentajeEnergia = (checkin.energia || 0) * 20;
+            document.getElementById('lobo-view-energy').innerText = checkin.energia ? `${porcentajeEnergia}%` : 'Sin reporte';
             document.getElementById('lobo-energy-bar').style.width = `${porcentajeEnergia}%`;
 
             // Nota de la Loba
@@ -1184,20 +1244,20 @@
             document.getElementById('lobo-phase-name').innerText = pred.faseNombre;
             document.getElementById('lobo-cycle-day').innerText = pred.tieneDatos ? `Día ${pred.diaActualCiclo}` : 'Sin datos';
             document.getElementById('lobo-phase-desc').innerText = pred.faseDescLobo;
-            document.getElementById('lobo-next-period').innerText = pred.tieneDatos ? `${formatearFechaCorta(pred.proximoPeriodoISO)} (en ${pred.diasParaProximo}d)` : '--';
-            document.getElementById('lobo-avg-len').innerText = `${pred.promedioCiclo} días`;
+            document.getElementById('lobo-next-period').innerText = pred.tieneEstimacion ? formatearFechaCorta(pred.proximoPeriodoISO) : '--';
+            document.getElementById('lobo-avg-len').innerText = pred.promedioCiclo == null ? '--' : `${pred.promedioCiclo} días`;
 
             // 3. Síntomas y Antojos de hoy
             const symDiv = document.getElementById('lobo-symptoms-list');
             if (regHoy.sintomas && regHoy.sintomas.length > 0) {
-                symDiv.innerHTML = regHoy.sintomas.map(s => `<span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold">${s}</span>`).join('');
+                symDiv.innerHTML = regHoy.sintomas.map(s => `<span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 font-bold">${escaparHTML(s)}</span>`).join('');
             } else {
-                symDiv.innerHTML = `<span class="text-gray-400 italic">Se siente bien físicamente hoy ✨</span>`;
+                symDiv.innerHTML = `<span class="text-gray-400 italic">Sin síntomas registrados hoy</span>`;
             }
 
             const cravDiv = document.getElementById('lobo-cravings-list');
             if (regHoy.antojos && regHoy.antojos.length > 0) {
-                cravDiv.innerHTML = regHoy.antojos.map(a => `<span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-700 font-bold">${a}</span>`).join('');
+                cravDiv.innerHTML = regHoy.antojos.map(a => `<span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-700 font-bold">${escaparHTML(a)}</span>`).join('');
             } else {
                 cravDiv.innerHTML = `<span class="text-gray-400 italic">Sin antojos específicos por ahora</span>`;
             }
@@ -1207,8 +1267,8 @@
             if ((regHoy.sintomas || []).includes('Cólicos 😣')) {
                 consejo += "🚨 <b>Alerta de cólicos:</b> Tu Loba tiene dolor hoy. Sorpréndela con algo calientito, un analgésico si suele tomar, o muchos mimos sin que tenga que esforzarse. ";
             }
-            if (porcentajeEnergia <= 40) {
-                consejo += "🪫 <b>Batería baja (${porcentajeEnergia}%):</b> Hoy tiene poquita energía. Propón planes tranquilos en casa, ayúdala con sus pendientes y déjala descansar. ";
+            if (porcentajeEnergia > 0 && porcentajeEnergia <= 40) {
+                consejo += `🪫 <b>Batería baja (${porcentajeEnergia}%):</b> Hoy tiene poquita energía. Propón planes tranquilos en casa, ayúdala con sus pendientes y déjala descansar. `;
             } else if (porcentajeEnergia >= 80) {
                 consejo += "⚡ <b>¡Batería a tope!</b> Hoy tu Loba amaneció con mucha energía. Es un gran día para salir a pasear, platicar o tener una cita divertida. ";
             }
@@ -1216,10 +1276,10 @@
                 consejo += "🫂 <b>Apoyo emocional:</b> Hoy necesita que su Lobo la escuche sin juzgar, le dé seguridad y le recuerde cuánto la ama. ";
             }
             if (regHoy.antojos && regHoy.antojos.length > 0) {
-                consejo += `🎁 <b>Punto extra de Lobo:</b> Tiene antojo de <b>${regHoy.antojos.join(', ')}</b>. ¡Si llegas con eso le vas a alegrar el día!`;
+                consejo += `🎁 <b>Punto extra de Lobo:</b> Tiene antojo de <b>${escaparHTML(regHoy.antojos.join(', '))}</b>. ¡Si llegas con eso le vas a alegrar el día!`;
             }
             if (!consejo) {
-                consejo = "🐺 Todo marcha increíble hoy con tu Loba. Mándale un mensajito bonito aquí abajo para sacarle una sonrisa.";
+                consejo = "🐺 Revisa lo que tu Loba comparta hoy. Mándale un mensajito bonito aquí abajo para sacarle una sonrisa.";
             }
             document.getElementById('lobo-smart-advice').innerHTML = consejo;
         }
