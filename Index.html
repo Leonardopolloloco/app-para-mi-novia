@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna & Sol - Nuestro Ciclo 💕</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Nunito', sans-serif; background-color: #fdf2f8; } /* tailwind pink-50 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        .chip {
+            transition: all 0.2s ease;
+        }
+        .chip.active {
+            background-color: #fbcfe8; /* pink-200 */
+            border-color: #f472b6; /* pink-400 */
+            color: #be185d; /* pink-700 */
+            transform: scale(1.05);
+        }
+        .hide { display: none !important; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #fbcfe8; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-gray-700 min-h-screen relative pb-10">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-pink-400 to-rose-400 text-white p-4 shadow-md rounded-b-3xl sticky top-0 z-50">
+        <h1 class="text-center text-2xl font-bold tracking-wide">Luna & Sol 🌙💕</h1>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto p-4 mt-2">
+        
+        <!-- View 0: Loading -->
+        <div id="view-loading" class="flex flex-col items-center justify-center h-64">
+            <div class="animate-pulse text-4xl mb-4">💓</div>
+            <p class="text-pink-500 font-semibold">Conectando corazones...</p>
+        </div>
+
+        <!-- View 1: Role Selection -->
+        <div id="view-role" class="hide glass-card rounded-3xl p-6 mt-10 text-center animate-fade-in">
+            <h2 class="text-xl font-bold text-pink-600 mb-6">¿Quién eres tú? ✨</h2>
+            <div class="space-y-4">
+                <button id="btn-role-gf" class="w-full bg-white border-2 border-pink-200 hover:bg-pink-50 text-pink-600 font-bold py-3 px-6 rounded-2xl shadow-sm transition-all transform hover:scale-105">
+                    Soy la Novia 🌸
+                </button>
+                <button id="btn-role-bf" class="w-full bg-white border-2 border-blue-200 hover:bg-blue-50 text-blue-600 font-bold py-3 px-6 rounded-2xl shadow-sm transition-all transform hover:scale-105">
+                    Soy el Novio 🧸
+                </button>
+            </div>
+        </div>
+
+        <!-- View 2: Boyfriend Link Screen -->
+        <div id="view-link" class="hide glass-card rounded-3xl p-6 mt-10 text-center">
+            <h2 class="text-xl font-bold text-blue-600 mb-2">Conéctate con ella 🔗</h2>
+            <p class="text-sm text-gray-500 mb-6">Pídele su "Código de Pareja" e ingrésalo aquí para sincronizar sus datos.</p>
+            
+            <input type="text" id="input-link-code" placeholder="Pega el código aquí..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-4 text-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            
+            <div id="link-error" class="text-red-500 text-sm mb-4 hide">Código inválido, intenta de nuevo.</div>
+            
+            <button id="btn-link-submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-all">
+                Sincronizar 💞
+            </button>
+            <button id="btn-link-back" class="w-full mt-3 text-gray-400 text-sm hover:text-gray-600 transition-colors">Volver</button>
+        </div>
+
+        <!-- View 3: Dashboard -->
+        <div id="view-dashboard" class="hide">
+            
+            <!-- Girlfriend Specific: Link Code Display -->
+            <div id="gf-code-section" class="hide glass-card rounded-2xl p-4 mb-4 flex items-center justify-between border border-pink-100">
+                <div>
+                    <p class="text-xs text-pink-400 font-bold uppercase tracking-wider">Tu Código de Pareja</p>
+                    <p id="display-link-code" class="text-sm font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded mt-1 select-all"></p>
+                </div>
+                <button id="btn-copy-code" class="bg-pink-100 hover:bg-pink-200 text-pink-600 px-4 py-2 rounded-xl text-sm font-bold transition-colors">
+                    Copiar
+                </button>
+            </div>
+
+            <!-- Boyfriend Specific: Partner Status Summary -->
+            <div id="bf-status-section" class="hide glass-card rounded-2xl p-5 mb-4 border border-blue-100 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-6xl opacity-10">🌙</div>
+                <h3 class="text-blue-500 font-bold text-lg mb-1">Estado de tu Niña 💕</h3>
+                <p id="bf-cycle-day" class="text-2xl font-extrabold text-gray-700 mb-2">Calculando...</p>
+                
+                <div id="bf-tips-box" class="bg-blue-50 rounded-xl p-3 mt-3 border border-blue-100 text-sm text-gray-700">
+                    <p id="bf-tip-text">Revisando cómo se siente hoy...</p>
+                </div>
+            </div>
+
+            <!-- Shared: Calendar -->
+            <div class="glass-card rounded-3xl p-5 mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <button id="cal-prev" class="text-gray-400 hover:text-pink-500 p-2 font-bold">&lt;</button>
+                    <h3 id="cal-month-title" class="font-bold text-lg text-gray-700 capitalize">Octubre 2026</h3>
+                    <button id="cal-next" class="text-gray-400 hover:text-pink-500 p-2 font-bold">&gt;</button>
+                </div>
+                
+                <!-- Day Names -->
+                <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold text-gray-400 mb-2">
+                    <div>Do</div><div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div><div>Vi</div><div>Sa</div>
+                </div>
+                
+                <!-- Calendar Grid -->
+                <div id="cal-grid" class="grid grid-cols-7 gap-1 text-center">
+                    <!-- Days injected here -->
+                </div>
+
+                <!-- Legend -->
+                <div class="flex justify-center items-center space-x-4 mt-4 text-[10px] text-gray-500">
+                    <div class="flex items-center"><span class="w-3 h-3 bg-red-400 rounded-full mr-1"></span> Periodo</div>
+                    <div class="flex items-center"><span class="w-3 h-3 bg-pink-100 rounded-full mr-1 border border-pink-200"></span> Predicción</div>
+                </div>
+            </div>
+
+            <!-- Daily Log Form (Editable for GF, Read-Only for BF) -->
+            <div id="daily-log-section" class="glass-card rounded-3xl p-5 relative">
+                <!-- Saving indicator -->
+                <div id="saving-indicator" class="hide absolute top-3 right-4 text-xs text-pink-400 font-bold animate-pulse">
+                    Guardando... ✨
+                </div>
+
+                <h3 class="font-bold text-lg text-gray-700 mb-4 border-b border-gray-100 pb-2 flex justify-between items-center">
+                    <span id="log-date-title">Hoy</span>
+                    <span id="log-read-only-badge" class="hide text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-bold">Solo Lectura</span>
+                </h3>
+
+                <!-- Period Toggle -->
+                <div class="flex items-center justify-between bg-white rounded-2xl p-4 shadow-sm border border-gray-50 mb-5">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">🩸</span>
+                        <span class="font-semibold text-gray-700">En periodo</span>
+                    </div>
+                    <!-- Toggle Switch -->
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-period" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-400"></div>
+                    </label>
+                </div>
+
+                <!-- Symptoms -->
+                <div class="mb-5">
+                    <p class="font-bold text-sm text-gray-500 mb-2">Síntomas físicos</p>
+                    <div id="symptoms-container" class="flex flex-wrap gap-2">
+                        <!-- Chips injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Moods -->
+                <div>
+                    <p class="font-bold text-sm text-gray-500 mb-2">Estado de ánimo</p>
+                    <div id="moods-container" class="flex flex-wrap gap-2">
+                        <!-- Chips injected via JS -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Toast Message -->
+    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-50">
+        Mensaje
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- Configuration & Initialization ---
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-love-app';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { /* Fallback config */ };
+    
+    let app, db, auth;
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+    } catch (e) {
+        console.error("Firebase init error", e);
+    }
+
+    // --- Constants & Catalogs ---
+    const SYMPTOMS = [
+        { id: 'colicos', icon: '😖', label: 'Cólicos', tip: '¡Alerta de cólicos! Prepárale un té de manzanilla, llévale una cobijita o una compresa de agua caliente.' },
+        { id: 'dolor_cabeza', icon: '🤕', label: 'Dolor de cabeza', tip: 'Le duele la cabeza. Necesita paz, menos ruido y tal vez un masajito suave.' },
+        { id: 'fatiga', icon: '😴', label: 'Fatiga', tip: 'Está cansada hoy. Ayúdala con algunas tareas y déjala dormir abrazadita.' },
+        { id: 'inflamacion', icon: '🎈', label: 'Inflamación', tip: 'Se siente inflamada. Algo ligero y rico de comer le hará bien.' },
+        { id: 'antojos', icon: '🍫', label: 'Antojos', tip: '¡Es tu momento de brillar! Sorpréndela con su postre o snack favorito.' }
+    ];
+
+    const MOODS = [
+        { id: 'feliz', icon: '😊', label: 'Feliz', tip: '¡Está de muy buen humor! Aprovecha para una cita bonita.' },
+        { id: 'sensible', icon: '🥺', label: 'Sensible', tip: 'Está muy sensible hoy. Trátala con extra delicadeza, necesita palabras bonitas y paciencia.' },
+        { id: 'irritable', icon: '😤', label: 'Irritable', tip: 'Paciencia nivel Dios. Dale su espacio si lo pide, no provoques discusiones y hazle saber que estás ahí.' },
+        { id: 'triste', icon: '😭', label: 'Triste', tip: 'Se siente triste. Llénala de apapachos, recuérdale cuánto la quieres.' },
+        { id: 'carinosa', icon: '🥰', label: 'Cariñosa', tip: '¡Día de abrazos! Está súper tierna, dale mucho amor.' }
+    ];
+
+    const CYCLE_LENGTH = 28; // Average fallback
+
+    // --- Global State ---
+    let state = {
+        uid: null,
+        role: null, // 'gf' or 'bf'
+        linkCode: null, // Girlfriend's UID (used by both as the document ID in public data)
+        coupleData: { logs: {} },
+        selectedDate: getLocalDateString(new Date()), // YYYY-MM-DD
+        viewMonth: new Date().getMonth(),
+        viewYear: new Date().getFullYear(),
+        unsubscribeCoupleData: null
+    };
+
+    // --- Utility Functions ---
+    function getLocalDateString(date) {
+        // Returns YYYY-MM-DD correctly adjusted to local timezone avoiding UTC offsets
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
+
+    // --- Core Logic ---
+    async function startApp() {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (err) {
+            console.error("Auth failed:", err);
+            showToast("Error de autenticación. Intenta recargar.");
+            return;
+        }
+
+        const user = auth.currentUser;
+        if (!user) return;
+        state.uid = user.uid;
+
+        // Load private profile settings
+        const profileRef = doc(db, 'artifacts', appId, 'users', state.uid, 'profile', 'settings');
+        const profileSnap = await getDoc(profileRef);
+
+        if (profileSnap.exists()) {
+            const data = profileSnap.data();
+            state.role = data.role;
+            if (state.role === 'bf') {
+                state.linkCode = data.linkCode || null;
+            } else if (state.role === 'gf') {
+                state.linkCode = state.uid; // GF's link code is her own UID
+            }
+            routeView();
+        } else {
+            // New user, show role selection
+            switchView('view-role');
+        }
+    }
+
+    async function setRole(role) {
+        state.role = role;
+        const profileRef = doc(db, 'artifacts', appId, 'users', state.uid, 'profile', 'settings');
+        await setDoc(profileRef, { role: role }, { merge: true });
+        
+        if (role === 'gf') {
+            state.linkCode = state.uid;
+            // Initialize public couple data if not exists
+            const coupleRef = doc(db, 'artifacts', appId, 'public', 'data', 'couple_data', state.linkCode);
+            await setDoc(coupleRef, { initialized: true }, { merge: true });
+        }
+        routeView();
+    }
+
+    async function linkBoyfriend(code) {
+        if (!code || code.trim() === '') {
+            document.getElementById('link-error').classList.remove('hide');
+            return;
+        }
+        
+        // Verify code exists in public data
+        const coupleRef = doc(db, 'artifacts', appId, 'public', 'data', 'couple_data', code.trim());
+        const snap = await getDoc(coupleRef);
+        
+        if (snap.exists()) {
+            state.linkCode = code.trim();
+            // Save to private profile
+            const profileRef = doc(db, 'artifacts', appId, 'users', state.uid, 'profile', 'settings');
+            await setDoc(profileRef, { linkCode: state.linkCode }, { merge: true });
+            document.getElementById('link-error').classList.add('hide');
+            routeView();
+        } else {
+            document.getElementById('link-error').classList.remove('hide');
+        }
+    }
+
+    function routeView() {
+        if (!state.role) {
+            switchView('view-role');
+            return;
+        }
+        
+        if (state.role === 'bf' && !state.linkCode) {
+            switchView('view-link');
+            return;
+        }
+
+        // Both GF and linked BF go to Dashboard
+        subscribeToCoupleData();
+        setupDashboardUI();
+        switchView('view-dashboard');
+    }
+
+    function switchView(viewId) {
+        ['view-loading', 'view-role', 'view-link', 'view-dashboard'].forEach(id => {
+            document.getElementById(id).classList.add('hide');
+        });
+        document.getElementById(viewId).classList.remove('hide');
+    }
+
+    function subscribeToCoupleData() {
+        if (state.unsubscribeCoupleData) state.unsubscribeCoupleData();
+        
+        const coupleRef = doc(db, 'artifacts', appId, 'public', 'data', 'couple_data', state.linkCode);
+        
+        state.unsubscribeCoupleData = onSnapshot(coupleRef, (docSnap) => {
+            if (docSnap.exists()) {
+                state.coupleData = docSnap.data();
+                if(!state.coupleData.logs) state.coupleData.logs = {};
+            } else {
+                state.coupleData = { logs: {} };
+            }
+            renderDashboard();
+        }, (error) => {
+            console.error("Data sync error:", error);
+            showToast("Error al sincronizar datos.");
+        });
+    }
+
+    // --- UI Rendering ---
+
+    function setupDashboardUI() {
+        const isReadOnly = state.role === 'bf';
+        
+        // Configure visibility based on role
+        if (state.role === 'gf') {
+            document.getElementById('gf-code-section').classList.remove('hide');
+            document.getElementById('display-link-code').textContent = state.linkCode;
+            document.getElementById('bf-status-section').classList.add('hide');
+            document.getElementById('log-read-only-badge').classList.add('hide');
+            document.getElementById('toggle-period').disabled = false;
+        } else {
+            document.getElementById('gf-code-section').classList.add('hide');
+            document.getElementById('bf-status-section').classList.remove('hide');
+            document.getElementById('log-read-only-badge').classList.remove('hide');
+            document.getElementById('toggle-period').disabled = true;
+        }
+
+        // Generate static chips
+        const symContainer = document.getElementById('symptoms-container');
+        symContainer.innerHTML = '';
+        SYMPTOMS.forEach(sym => {
+            const btn = document.createElement('button');
+            btn.className = `chip text-xs border rounded-xl py-1.5 px-3 flex items-center space-x-1 ${isReadOnly ? 'cursor-default' : 'cursor-pointer hover:bg-gray-50 bg-white border-gray-200 text-gray-600'}`;
+            btn.dataset.id = sym.id;
+            btn.innerHTML = `<span>${sym.icon}</span><span>${sym.label}</span>`;
+            if (!isReadOnly) {
+                btn.onclick = () => toggleLogItem('symptoms', sym.id);
+            }
+            symContainer.appendChild(btn);
+        });
+
+        const moodContainer = document.getElementById('moods-container');
+        moodContainer.innerHTML = '';
+        MOODS.forEach(mood => {
+            const btn = document.createElement('button');
+            btn.className = `chip text-xs border rounded-xl py-1.5 px-3 flex items-center space-x-1 ${isReadOnly ? 'cursor-default' : 'cursor-pointer hover:bg-gray-50 bg-white border-gray-200 text-gray-600'}`;
+            btn.dataset.id = mood.id;
+            btn.innerHTML = `<span>${mood.icon}</span><span>${mood.label}</span>`;
+            if (!isReadOnly) {
+                btn.onclick = () => toggleLogItem('moods', mood.id);
+            }
+            moodContainer.appendChild(btn);
+        });
+
+        // Set period toggle listener
+        if (!isReadOnly) {
+            document.getElementById('toggle-period').onchange = (e) => {
+                updateDailyLog('period', e.target.checked);
+            };
+        }
+    }
+
+    function renderDashboard() {
+        renderCalendar();
+        renderDailyLogForm();
+        if (state.role === 'bf') {
+            renderBoyfriendStatus();
+        }
+    }
+
+    function renderCalendar() {
+        const calMonthTitle = document.getElementById('cal-month-title');
+        const calGrid = document.getElementById('cal-grid');
+        
+        const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        calMonthTitle.textContent = `${monthNames[state.viewMonth]} ${state.viewYear}`;
+        
+        const firstDay = new Date(state.viewYear, state.viewMonth, 1).getDay();
+        const daysInMonth = new Date(state.viewYear, state.viewMonth + 1, 0).getDate();
+        
+        calGrid.innerHTML = '';
+        
+        // Empty slots
+        for (let i = 0; i < firstDay; i++) {
+            const emptyDiv = document.createElement('div');
+            calGrid.appendChild(emptyDiv);
+        }
+
+        // Calculate Predictions
+        const cycleInfo = calculateCycleStatus();
+        
+        // Days
+        const todayStr = getLocalDateString(new Date());
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = getLocalDateString(new Date(state.viewYear, state.viewMonth, day));
+            const dayData = state.coupleData.logs[dateStr] || {};
+            
+            const btn = document.createElement('button');
+            btn.textContent = day;
+            btn.className = "w-8 h-8 mx-auto flex items-center justify-center rounded-full text-sm font-semibold transition-all relative";
+            
+            // Base styles
+            if (dateStr === state.selectedDate) {
+                btn.classList.add('ring-2', 'ring-pink-400', 'ring-offset-1');
+            }
+
+            if (dayData.period) {
+                // Actual logged period
+                btn.classList.add('bg-red-400', 'text-white', 'shadow-sm');
+            } else if (isDatePredicted(dateStr, cycleInfo)) {
+                // Predicted period
+                btn.classList.add('bg-pink-100', 'text-pink-600', 'border', 'border-pink-200');
+            } else {
+                // Normal day
+                btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+            }
+
+            if (dateStr === todayStr && dateStr !== state.selectedDate && !dayData.period) {
+                btn.classList.add('border-2', 'border-gray-300'); // Marker for actual today
+            }
+
+            btn.onclick = () => {
+                state.selectedDate = dateStr;
+                renderDashboard();
+            };
+            
+            calGrid.appendChild(btn);
+        }
+    }
+
+    function renderDailyLogForm() {
+        const todayStr = getLocalDateString(new Date());
+        let dateTitle = state.selectedDate === todayStr ? "Hoy" : state.selectedDate;
+        document.getElementById('log-date-title').textContent = dateTitle;
+
+        const dayData = state.coupleData.logs[state.selectedDate] || { period: false, symptoms: [], moods: [] };
+        const symptomsArr = dayData.symptoms || [];
+        const moodsArr = dayData.moods || [];
+
+        // Update Toggle
+        document.getElementById('toggle-period').checked = dayData.period === true;
+
+        // Update Chips visuals
+        const isReadOnly = state.role === 'bf';
+        
+        // Reset and apply active states
+        document.querySelectorAll('#symptoms-container .chip').forEach(chip => {
+            const id = chip.dataset.id;
+            const active = symptomsArr.includes(id);
+            updateChipStyle(chip, active, isReadOnly);
+        });
+
+        document.querySelectorAll('#moods-container .chip').forEach(chip => {
+            const id = chip.dataset.id;
+            const active = moodsArr.includes(id);
+            updateChipStyle(chip, active, isReadOnly);
+        });
+    }
+
+    function updateChipStyle(chip, isActive, isReadOnly) {
+        if (isActive) {
+            chip.className = `chip active text-xs border rounded-xl py-1.5 px-3 flex items-center space-x-1 ${isReadOnly ? 'cursor-default opacity-100' : 'cursor-pointer'}`;
+        } else {
+            chip.className = `chip text-xs border rounded-xl py-1.5 px-3 flex items-center space-x-1 ${isReadOnly ? 'hidden' : 'cursor-pointer hover:bg-gray-50 bg-white border-gray-200 text-gray-600'}`;
+        }
+    }
+
+    // --- BF Specific Logic ---
+    
+    function calculateCycleStatus() {
+        const logs = state.coupleData.logs;
+        const periodDays = Object.keys(logs).filter(k => logs[k].period).sort();
+        
+        if (periodDays.length === 0) return null;
+
+        // Find the start of the latest continuous block of periods
+        const lastLoggedDay = periodDays[periodDays.length - 1];
+        let startOfLastPeriod = lastLoggedDay;
+        
+        for(let i = periodDays.length - 1; i > 0; i--) {
+            const curr = new Date(periodDays[i]);
+            const prev = new Date(periodDays[i-1]);
+            const diff = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+            if (diff === 1) {
+                startOfLastPeriod = periodDays[i-1];
+            } else {
+                break;
+            }
+        }
+
+        const todayDate = new Date(getLocalDateString(new Date()));
+        const startDate = new Date(startOfLastPeriod);
+        const diffTime = todayDate - startDate;
+        
+        let cycleDay = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+        // Predictions for next 2 cycles
+        const predictions = [];
+        let nextStart = new Date(startDate);
+        for(let i = 0; i < 2; i++) {
+            nextStart.setDate(nextStart.getDate() + CYCLE_LENGTH);
+            predictions.push(getLocalDateString(new Date(nextStart)));
+        }
+
+        const nextPeriodDate = new Date(predictions[0]);
+        let daysUntilNext = Math.ceil((nextPeriodDate - todayDate) / (1000 * 60 * 60 * 24));
+        // If today is past the predicted date and she hasn't logged it, adjust
+        if (daysUntilNext < 0) {
+            daysUntilNext = 0; // Or recalculate based on typical delay
+        }
+
+        return {
+            cycleDay,
+            daysUntilNext,
+            predictions,
+            isPeriodToday: logs[getLocalDateString(todayDate)]?.period === true
+        };
+    }
+
+    function isDatePredicted(dateStr, cycleInfo) {
+        if (!cycleInfo) return false;
+        const targetDate = new Date(dateStr);
+        
+        for (let p of cycleInfo.predictions) {
+            const pDate = new Date(p);
+            // Assume 5 days of predicted period
+            const diff = Math.round((targetDate - pDate) / (1000 * 60 * 60 * 24));
+            if (diff >= 0 && diff <= 4) return true;
+        }
+        return false;
+    }
+
+    function renderBoyfriendStatus() {
+        const cycleInfo = calculateCycleStatus();
+        const cycleText = document.getElementById('bf-cycle-day');
+        const tipText = document.getElementById('bf-tip-text');
+        
+        const todayStr = getLocalDateString(new Date());
+        const todayLog = state.coupleData.logs[todayStr] || { period: false, symptoms: [], moods: [] };
+
+        if (!cycleInfo) {
+            cycleText.textContent = "Esperando sus datos...";
+            tipText.textContent = "Aún no ha registrado ningún periodo. Dile que registre su último periodo en la app para sincronizar fechas. 💕";
+            return;
+        }
+
+        if (cycleInfo.isPeriodToday) {
+            cycleText.innerHTML = `<span class="text-red-500">En su periodo 🩸</span>`;
+        } else {
+            cycleText.textContent = `Día ${cycleInfo.cycleDay} del ciclo`;
+        }
+
+        // Generate Tips based on today's logs
+        let tips = [];
+        if (cycleInfo.isPeriodToday) {
+            tips.push("❤️ Está en sus días. Tenle mucha paciencia, consiéntela más de lo normal.");
+        } else if (cycleInfo.daysUntilNext <= 3 && cycleInfo.daysUntilNext > 0) {
+            tips.push(`⚠️ Su periodo podría empezar en ${cycleInfo.daysUntilNext} días. Prepárate con detalles dulces.`);
+        }
+
+        todayLog.symptoms.forEach(sId => {
+            const s = SYMPTOMS.find(x => x.id === sId);
+            if(s) tips.push(`${s.icon} ${s.tip}`);
+        });
+
+        todayLog.moods.forEach(mId => {
+            const m = MOODS.find(x => x.id === mId);
+            if(m) tips.push(`${m.icon} ${m.tip}`);
+        });
+
+        if (tips.length > 0) {
+            // Join tips with line breaks or pick top 2
+            tipText.innerHTML = tips.map(t => `<div class="mb-1">${t}</div>`).join('');
+        } else {
+            if (cycleInfo.isPeriodToday) {
+                tipText.textContent = "Está en su periodo, mándale un mensajito lindo para saber cómo se siente.";
+            } else {
+                tipText.textContent = "Todo tranquilo por hoy. ¡No olvides decirle lo hermosa que es! ✨";
+            }
+        }
+    }
+
+
+    // --- Data Writing (Girlfriend) ---
+
+    async function toggleLogItem(category, itemId) {
+        if (state.role !== 'gf') return; // Guard
+        
+        let dayData = state.coupleData.logs[state.selectedDate] || { period: false, symptoms: [], moods: [] };
+        if (!dayData[category]) dayData[category] = [];
+        
+        const idx = dayData[category].indexOf(itemId);
+        if (idx > -1) {
+            dayData[category].splice(idx, 1);
+        } else {
+            dayData[category].push(itemId);
+        }
+
+        await updateDailyLog(category, dayData[category]);
+    }
+
+    async function updateDailyLog(field, value) {
+        if (state.role !== 'gf') return;
+
+        const coupleRef = doc(db, 'artifacts', appId, 'public', 'data', 'couple_data', state.linkCode);
+        
+        const path = `logs.${state.selectedDate}.${field}`;
+        
+        const indicator = document.getElementById('saving-indicator');
+        indicator.classList.remove('hide');
+
+        try {
+            await setDoc(coupleRef, {
+                logs: {
+                    [state.selectedDate]: { [field]: value }
+                }
+            }, { merge: true });
+            
+            // UI optimism applied via onSnapshot naturally
+        } catch (e) {
+            console.error("Error saving log", e);
+            showToast("Error al guardar. Verifica tu conexión.");
+        } finally {
+            setTimeout(() => indicator.classList.add('hide'), 800);
+        }
+    }
+
+    // --- DOM Event Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Buttons
+        document.getElementById('btn-role-gf').addEventListener('click', () => setRole('gf'));
+        document.getElementById('btn-role-bf').addEventListener('click', () => setRole('bf'));
+        
+        document.getElementById('btn-link-submit').addEventListener('click', () => {
+            const code = document.getElementById('input-link-code').value;
+            linkBoyfriend(code);
+        });
+
+        document.getElementById('btn-link-back').addEventListener('click', () => {
+            switchView('view-role');
+        });
+
+        document.getElementById('btn-copy-code').addEventListener('click', () => {
+            const code = document.getElementById('display-link-code').innerText;
+            try {
+                // iFrame safe copying approach
+                const textArea = document.createElement("textarea");
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("Copy");
+                textArea.remove();
+                showToast("¡Código copiado! Compártelo con tu novio.");
+            } catch(e) {
+                showToast("Error al copiar. Cópialo manualmente.");
+            }
+        });
+
+        // Calendar Controls
+        document.getElementById('cal-prev').addEventListener('click', () => {
+            state.viewMonth--;
+            if (state.viewMonth < 0) {
+                state.viewMonth = 11;
+                state.viewYear--;
+            }
+            renderDashboard();
+        });
+
+        document.getElementById('cal-next').addEventListener('click', () => {
+            state.viewMonth++;
+            if (state.viewMonth > 11) {
+                state.viewMonth = 0;
+                state.viewYear++;
+            }
+            renderDashboard();
+        });
+
+        // Start initialization
+        startApp();
+    });
+
+</script>
+</body>
+</html>
